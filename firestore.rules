@@ -1,0 +1,61 @@
+rules_version = '2';
+
+// Schema (see src/lib/store.ts FirestoreStore for the reads/writes that drive this):
+//   households/{householdId}/uidMap/{uid}              -> { memberId }
+//   households/{householdId}/exclusions/{id}            -> Exclusion
+//   households/{householdId}/mealPlan/{date}             -> DayPlan
+//   households/{householdId}/memberOverrides/{memberId}  -> Partial<Member>
+//   households/{householdId}/members/{memberId}/private/metrics -> PrivateMetrics
+//   households/{householdId}/digests/{weekId-memberId}   -> DigestEntry
+//
+// Only the four known household members (mapped via uidMap) can read/write anything.
+// Private body metrics are visible only to the subject + the admin (Alex), per PRD 6.3.
+// Damian's digest is admin-only — never readable by Damian himself, per PRD 6.3/11.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /households/{householdId} {
+
+      function isHouseholdMember() {
+        return request.auth != null &&
+          exists(/databases/$(database)/documents/households/$(householdId)/uidMap/$(request.auth.uid));
+      }
+
+      function myMemberId() {
+        return get(/databases/$(database)/documents/households/$(householdId)/uidMap/$(request.auth.uid)).data.memberId;
+      }
+
+      function isAdmin() {
+        return isHouseholdMember() && myMemberId() == 'alex';
+      }
+
+      // A signed-in user may only claim their own uid, and only once.
+      match /uidMap/{uid} {
+        allow read: if isHouseholdMember();
+        allow create: if request.auth != null && request.auth.uid == uid && !exists(/databases/$(database)/documents/households/$(householdId)/uidMap/$(uid));
+        allow update, delete: if false;
+      }
+
+      match /exclusions/{exclusionId} {
+        allow read, write: if isHouseholdMember();
+      }
+
+      match /mealPlan/{date} {
+        allow read, write: if isHouseholdMember();
+      }
+
+      match /memberOverrides/{memberId} {
+        allow read: if isHouseholdMember();
+        allow write: if isHouseholdMember() && (myMemberId() == memberId || isAdmin());
+      }
+
+      match /members/{memberId}/private/{doc} {
+        allow read, write: if isHouseholdMember() && (myMemberId() == memberId || isAdmin());
+      }
+
+      match /digests/{digestId} {
+        allow read, write: if isAdmin();
+      }
+    }
+  }
+}
