@@ -1,16 +1,23 @@
 rules_version = '2';
 
 // Schema (see src/lib/store.ts FirestoreStore for the reads/writes that drive this):
-//   households/{householdId}/uidMap/{uid}              -> { memberId }
-//   households/{householdId}/exclusions/{id}            -> Exclusion
-//   households/{householdId}/mealPlan/{date}             -> DayPlan
-//   households/{householdId}/memberOverrides/{memberId}  -> Partial<Member>
-//   households/{householdId}/members/{memberId}/private/metrics -> PrivateMetrics
-//   households/{householdId}/digests/{weekId-memberId}   -> DigestEntry
+//   households/{householdId}/uidMap/{uid}                      -> { memberId }
+//   households/{householdId}/exclusions/{id}                    -> Exclusion
+//   households/{householdId}/mealPlan/{date}                     -> DayPlan
+//   households/{householdId}/members/{memberId}                  -> PublicMemberInfo {id, displayName}
+//   households/{householdId}/members/{memberId}/private/profile  -> MemberProfile (biometrics, goals, macros)
+//   households/{householdId}/members/{memberId}/private/metrics  -> PrivateMetrics (body fat %, exact weight)
+//   households/{householdId}/digests/{weekId-memberId}           -> DigestEntry
 //
-// Only the four known household members (mapped via uidMap) can read/write anything.
-// Private body metrics are visible only to the subject + the admin (Alex), per PRD 6.3.
-// Damian's digest is admin-only — never readable by Damian himself, per PRD 6.3/11.
+// Privacy model (PRD 6.3/11):
+//  - members/{memberId} is the ONLY thing readable without authentication -- just a
+//    chosen nickname, needed to render the login picker. Never biometrics/goals/macros.
+//  - private/profile (age, height, weight, goal, macro targets) is readable by any
+//    authenticated household member (meal planning needs everyone's targets), but only
+//    editable by that person or the admin (Alex).
+//  - private/metrics (body fat %, exact weight, weight trend) is visible only to the
+//    subject + Alex.
+//  - Damian's digest is admin-only -- never readable by Damian himself.
 
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -44,12 +51,18 @@ service cloud.firestore {
         allow read, write: if isHouseholdMember();
       }
 
-      match /memberOverrides/{memberId} {
+      // Public: id + chosen nickname only, needed pre-auth for the login picker.
+      match /members/{memberId} {
+        allow read: if true;
+        allow write: if isHouseholdMember() && (myMemberId() == memberId || isAdmin());
+      }
+
+      match /members/{memberId}/private/profile {
         allow read: if isHouseholdMember();
         allow write: if isHouseholdMember() && (myMemberId() == memberId || isAdmin());
       }
 
-      match /members/{memberId}/private/{doc} {
+      match /members/{memberId}/private/metrics {
         allow read, write: if isHouseholdMember() && (myMemberId() == memberId || isAdmin());
       }
 

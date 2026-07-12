@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import type { Member, MemberId } from '../types'
-import { HOUSEHOLD_MEMBERS, getMember } from '../data/household'
+import type { Member, MemberId, MemberProfile } from '../types'
+import { MEMBER_SLOTS } from '../data/household'
 import { signInWithPin, signOutCurrent, subscribeAuth } from '../lib/auth'
 import { store } from '../lib/store'
 import { ensureDefaultExclusions } from '../lib/seed'
@@ -8,6 +8,19 @@ import { isFirebaseConfigured } from '../firebase'
 
 const CURRENT_MEMBER_KEY = 'household-nutrition-current-member'
 const ADMIN_ID: MemberId = 'alex'
+
+function emptyProfile(memberId: MemberId): MemberProfile {
+  return {
+    displayName: `(${memberId})`,
+    age: 0,
+    heightIn: 0,
+    weightLb: 0,
+    activityLevel: '',
+    goal: '',
+    targetsByDayType: { standard: { calories: 0, proteinG: 0, fatG: 0, carbG: 0 } },
+    formulaNote: 'Not set up yet — ask the household admin to fill in this profile.',
+  }
+}
 
 interface AuthContextValue {
   currentMember: Member | null
@@ -17,14 +30,25 @@ interface AuthContextValue {
   members: Member[]
   signIn: (memberId: MemberId, pin: string) => Promise<void>
   signOut: () => Promise<void>
+  refreshMembers: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [currentMemberId, setCurrentMemberId] = useState<MemberId | null>(null)
-  const [members, setMembers] = useState<Member[]>(HOUSEHOLD_MEMBERS)
+  const [members, setMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(true)
+
+  async function loadMembers() {
+    const profiles = await Promise.all(
+      MEMBER_SLOTS.map(async (slot) => {
+        const profile = (await store.getMemberProfile(slot.id)) ?? emptyProfile(slot.id)
+        return { ...slot, ...profile }
+      }),
+    )
+    setMembers(profiles)
+  }
 
   useEffect(() => {
     const unsubscribe = subscribeAuth((uid) => {
@@ -42,14 +66,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!currentMemberId) return
     ensureDefaultExclusions()
-    store.getMemberOverrides().then((overrides) => {
-      setMembers(HOUSEHOLD_MEMBERS.map((m) => ({ ...m, ...overrides[m.id] })))
-    })
+    loadMembers()
   }, [currentMemberId])
 
   const value = useMemo<AuthContextValue>(
     () => ({
-      currentMember: currentMemberId ? (getMember(currentMemberId) ? members.find((m) => m.id === currentMemberId)! : null) : null,
+      currentMember: currentMemberId ? (members.find((m) => m.id === currentMemberId) ?? null) : null,
       isAdmin: currentMemberId === ADMIN_ID,
       loading,
       isDemoMode: !isFirebaseConfigured,
@@ -64,6 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem(CURRENT_MEMBER_KEY)
         setCurrentMemberId(null)
       },
+      refreshMembers: loadMembers,
     }),
     [currentMemberId, loading, members],
   )

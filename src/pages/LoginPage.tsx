@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import type { MemberId } from '../types'
+import { store } from '../lib/store'
+import type { MemberId, PublicMemberInfo } from '../types'
 
 const AVATARS: Record<MemberId, string> = {
   alex: '🧔',
@@ -11,11 +12,17 @@ const AVATARS: Record<MemberId, string> = {
 }
 
 export default function LoginPage() {
-  const { currentMember, members, signIn, isDemoMode } = useAuth()
+  const { currentMember, signIn, isDemoMode } = useAuth()
+  const [people, setPeople] = useState<PublicMemberInfo[]>([])
   const [selected, setSelected] = useState<MemberId | null>(null)
   const [pin, setPin] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+
+  // Public info only (id + chosen nickname) -- safe to fetch before authentication.
+  useEffect(() => {
+    store.listPublicMemberInfo().then(setPeople)
+  }, [])
 
   if (currentMember) return <Navigate to="/" replace />
 
@@ -48,21 +55,21 @@ export default function LoginPage() {
 
       {!selected ? (
         <div className="grid grid-cols-2 gap-4">
-          {members.map((m) => (
+          {people.map((p) => (
             <button
-              key={m.id}
-              onClick={() => setSelected(m.id)}
+              key={p.id}
+              onClick={() => setSelected(p.id)}
               className="flex flex-col items-center gap-2 rounded-xl border border-slate-800 bg-slate-900 px-8 py-6 transition hover:border-emerald-600 hover:bg-slate-800"
             >
-              <span className="text-4xl">{AVATARS[m.id]}</span>
-              <span className="font-medium">{m.displayName}</span>
+              <span className="text-4xl">{AVATARS[p.id]}</span>
+              <span className="font-medium">{p.displayName}</span>
             </button>
           ))}
         </div>
       ) : (
         <form onSubmit={handlePinSubmit} className="flex w-full max-w-xs flex-col items-center gap-4">
           <span className="text-4xl">{AVATARS[selected]}</span>
-          <p className="font-medium">{members.find((m) => m.id === selected)?.displayName}</p>
+          <p className="font-medium">{people.find((p) => p.id === selected)?.displayName}</p>
           <input
             autoFocus
             type="password"

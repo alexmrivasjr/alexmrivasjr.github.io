@@ -1,5 +1,6 @@
-import type { DayPlan, DigestEntry, Exclusion, Member, MemberId, PrivateMetrics } from '../types'
+import type { DayPlan, DigestEntry, Exclusion, MemberId, MemberProfile, PrivateMetrics, PublicMemberInfo } from '../types'
 import { db, isFirebaseConfigured, HOUSEHOLD_ID } from '../firebase'
+import { MEMBER_SLOTS, DEMO_PROFILES } from '../data/household'
 
 export interface DataStore {
   readonly mode: 'firestore' | 'local-demo'
@@ -11,8 +12,11 @@ export interface DataStore {
   saveDayPlan(plan: DayPlan): Promise<void>
   recentRecipeIds(beforeDate: string, lookbackDays: number): Promise<string[]>
 
-  getMemberOverrides(): Promise<Partial<Record<MemberId, Partial<Member>>>>
-  updateMemberProfile(memberId: MemberId, patch: Partial<Member>): Promise<void>
+  /** Safe to call before authentication — id + chosen nickname only, nothing sensitive. */
+  listPublicMemberInfo(): Promise<PublicMemberInfo[]>
+  /** Full profile (biometrics, goals, macro targets). Requires household authentication. */
+  getMemberProfile(memberId: MemberId): Promise<MemberProfile | null>
+  updateMemberProfile(memberId: MemberId, patch: Partial<MemberProfile>): Promise<void>
 
   getPrivateMetrics(memberId: MemberId): Promise<PrivateMetrics | null>
   updatePrivateMetrics(memberId: MemberId, patch: Partial<PrivateMetrics>): Promise<void>
@@ -24,8 +28,9 @@ export interface DataStore {
 // ---------------------------------------------------------------------------
 // Local (offline demo) backend — used until a Firebase project is configured.
 // Persists to this browser only, so it is NOT shared across household devices.
-// Same interface as the Firestore backend so swapping in real config is a
-// drop-in upgrade with no UI changes.
+// Seeded with generic placeholder profiles (never real household data — this
+// file ships in the public JS bundle). Same interface as the Firestore
+// backend so swapping in real config is a drop-in upgrade with no UI changes.
 // ---------------------------------------------------------------------------
 
 const LOCAL_KEY = 'household-nutrition-demo-v1'
@@ -33,7 +38,7 @@ const LOCAL_KEY = 'household-nutrition-demo-v1'
 interface LocalData {
   exclusions: Exclusion[]
   dayPlans: Record<string, DayPlan>
-  memberOverrides: Partial<Record<MemberId, Partial<Member>>>
+  profiles: Partial<Record<MemberId, MemberProfile>>
   privateMetrics: Partial<Record<MemberId, PrivateMetrics>>
   digestEntries: DigestEntry[]
 }
@@ -41,12 +46,12 @@ interface LocalData {
 function loadLocal(): LocalData {
   const raw = localStorage.getItem(LOCAL_KEY)
   if (!raw) {
-    return { exclusions: [], dayPlans: {}, memberOverrides: {}, privateMetrics: {}, digestEntries: [] }
+    return { exclusions: [], dayPlans: {}, profiles: { ...DEMO_PROFILES }, privateMetrics: {}, digestEntries: [] }
   }
   try {
     return JSON.parse(raw) as LocalData
   } catch {
-    return { exclusions: [], dayPlans: {}, memberOverrides: {}, privateMetrics: {}, digestEntries: [] }
+    return { exclusions: [], dayPlans: {}, profiles: { ...DEMO_PROFILES }, privateMetrics: {}, digestEntries: [] }
   }
 }
 
@@ -99,13 +104,18 @@ class LocalStore implements DataStore {
     return ids
   }
 
-  async getMemberOverrides(): Promise<Partial<Record<MemberId, Partial<Member>>>> {
-    return loadLocal().memberOverrides
+  async listPublicMemberInfo(): Promise<PublicMemberInfo[]> {
+    const data = loadLocal()
+    return MEMBER_SLOTS.map((slot) => ({ id: slot.id, displayName: data.profiles[slot.id]?.displayName ?? `(${slot.id})` }))
   }
 
-  async updateMemberProfile(memberId: MemberId, patch: Partial<Member>): Promise<void> {
+  async getMemberProfile(memberId: MemberId): Promise<MemberProfile | null> {
+    return loadLocal().profiles[memberId] ?? null
+  }
+
+  async updateMemberProfile(memberId: MemberId, patch: Partial<MemberProfile>): Promise<void> {
     const data = loadLocal()
-    data.memberOverrides[memberId] = { ...data.memberOverrides[memberId], ...patch }
+    data.profiles[memberId] = { ...data.profiles[memberId], ...patch } as MemberProfile
     saveLocal(data)
   }
 
@@ -134,6 +144,10 @@ class LocalStore implements DataStore {
 // ---------------------------------------------------------------------------
 // Firestore backend — active once VITE_FIREBASE_* env vars are set. Layout
 // matches firestore.rules at the repo root; keep the two in sync.
+//
+// households/{id}/members/{memberId}                    -> PublicMemberInfo (public read)
+// households/{id}/members/{memberId}/private/profile     -> MemberProfile (household-auth read)
+// households/{id}/members/{memberId}/private/metrics     -> PrivateMetrics (self+admin read)
 // ---------------------------------------------------------------------------
 
 class FirestoreStore implements DataStore {
@@ -193,19 +207,28 @@ class FirestoreStore implements DataStore {
     return ids
   }
 
-  async getMemberOverrides(): Promise<Partial<Record<MemberId, Partial<Member>>>> {
+  async listPublicMemberInfo(): Promise<PublicMemberInfo[]> {
     const { fs, db } = await this.fs()
-    const snap = await fs.getDocs(fs.collection(db, 'households', HOUSEHOLD_ID, 'memberOverrides'))
-    const result: Partial<Record<MemberId, Partial<Member>>> = {}
-    snap.forEach((d) => {
-      result[d.id as MemberId] = d.data() as Partial<Member>
-    })
-    return result
+    const snap = await fs.getDocs(fs.collection(db, 'households', HOUSEHOLD_ID, 'members'))
+    const byId = new Map(snap.docs.map((d) => [d.id, d.data() as PublicMemberInfo]))
+    // Always return all four slots so the login picker never renders empty for an
+    // unclaimed member — falls back to a generic label until someone sets it.
+    return MEMBER_SLOTS.map((slot) => byId.get(slot.id) ?? { id: slot.id, displayName: `(${slot.id})` })
   }
 
-  async updateMemberProfile(memberId: MemberId, patch: Partial<Member>): Promise<void> {
+  async getMemberProfile(memberId: MemberId): Promise<MemberProfile | null> {
     const { fs, db } = await this.fs()
-    await fs.setDoc(fs.doc(db, 'households', HOUSEHOLD_ID, 'memberOverrides', memberId), patch, { merge: true })
+    const snap = await fs.getDoc(fs.doc(db, 'households', HOUSEHOLD_ID, 'members', memberId, 'private', 'profile'))
+    return snap.exists() ? (snap.data() as MemberProfile) : null
+  }
+
+  async updateMemberProfile(memberId: MemberId, patch: Partial<MemberProfile>): Promise<void> {
+    const { fs, db } = await this.fs()
+    await fs.setDoc(fs.doc(db, 'households', HOUSEHOLD_ID, 'members', memberId, 'private', 'profile'), patch, { merge: true })
+    if (patch.displayName) {
+      // Public doc mirrors ONLY the nickname -- never biometrics/goals/macros.
+      await fs.setDoc(fs.doc(db, 'households', HOUSEHOLD_ID, 'members', memberId), { id: memberId, displayName: patch.displayName }, { merge: true })
+    }
   }
 
   async getPrivateMetrics(memberId: MemberId): Promise<PrivateMetrics | null> {

@@ -11,7 +11,7 @@ const TREND_LABEL: Record<DigestEntry['trending'], string> = {
 }
 
 export default function DigestPage() {
-  const { isAdmin } = useAuth()
+  const { isAdmin, members } = useAuth()
   const [entries, setEntries] = useState<DigestEntry[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -25,6 +25,9 @@ export default function DigestPage() {
   if (!isAdmin) return <Navigate to="/" replace />
   if (loading) return <p className="text-slate-400">Loading…</p>
 
+  const subject = members.find((m) => m.isFloorOnly)
+  const subjectName = subject?.displayName ?? 'Monitored member'
+
   const byWeek = entries.reduce<Record<string, DigestEntry[]>>((acc, e) => {
     ;(acc[e.weekId] ??= []).push(e)
     return acc
@@ -33,10 +36,10 @@ export default function DigestPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-xl font-bold">Damian&apos;s Weekly Digest</h1>
+        <h1 className="text-xl font-bold">{subjectName}&apos;s Weekly Digest</h1>
         <p className="text-sm text-slate-400">
-          Private to you. Summarizes edits Damian makes to his own plan so you can spot-check they trend toward his performance and
-          growth goals. Damian is not shown or alerted that this exists.
+          Private to you. Summarizes edits {subjectName} makes to their own plan so you can spot-check they trend toward their
+          performance and growth goals. {subjectName} is not shown or alerted that this exists.
         </p>
       </div>
 

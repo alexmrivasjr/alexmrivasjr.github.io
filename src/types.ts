@@ -14,23 +14,49 @@ export interface MacroTargets {
 /** Melissa alternates deficit/maintenance days; everyone else has one day type. */
 export type DayType = 'standard' | 'deficit' | 'maintenance' | 'training-2x'
 
-export interface Member {
+/**
+ * Structural config for a household member slot — safe to ship in the public JS bundle
+ * (it's just role flags, not identifying data). Defined in src/data/household.ts.
+ */
+export interface MemberSlot {
   id: MemberId
+  isMinor: boolean
+  /** true for members whose targets must never be reduced below this (Damian). */
+  isFloorOnly: boolean
+  /** Members allowed to see this person's private body-composition metrics, in addition to themselves. */
+  privacyDelegates: MemberId[]
+}
+
+/**
+ * Just enough to render the pre-login profile picker. Publicly readable (no auth) by
+ * design — everything more sensitive than a chosen nickname lives in MemberProfile
+ * instead, which requires authentication to read.
+ */
+export interface PublicMemberInfo {
+  id: MemberId
+  displayName: string
+}
+
+/**
+ * The actual personal data (name, biometrics, goals, macro targets). Never committed to
+ * git or bundled in client JS — lives only in Firestore behind auth, entered once by the
+ * household through the Profile screen. Local demo mode uses generic placeholder values
+ * instead of real data for exactly this reason.
+ */
+export interface MemberProfile {
   displayName: string
   age: number
   heightIn: number
   weightLb: number
   activityLevel: string
   goal: string
-  isMinor: boolean
-  /** true for members whose targets must never be reduced below this (Damian). */
-  isFloorOnly: boolean
-  /** Members allowed to see this person's private body-composition metrics, in addition to themselves. */
-  privacyDelegates: MemberId[]
   /** Targets keyed by day type. Most members only have 'standard'. */
   targetsByDayType: Partial<Record<DayType, MacroTargets>>
   formulaNote: string
 }
+
+/** MemberSlot + MemberProfile assembled at runtime — the shape the rest of the app works with. */
+export type Member = MemberSlot & MemberProfile
 
 export interface PrivateMetrics {
   memberId: MemberId
@@ -113,7 +139,8 @@ export interface Exclusion {
 
 export interface DigestEntry {
   weekId: string // e.g. 2026-W27
-  memberId: 'damian'
+  /** Whichever member has isFloorOnly=true (Damian's role in this household's slot config). */
+  memberId: MemberId
   summary: string
   trending: 'toward-goals' | 'away-from-goals' | 'neutral'
   createdAt: string

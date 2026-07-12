@@ -1,86 +1,71 @@
-import type { Member } from '../types'
+import type { MemberId, MemberProfile, MemberSlot } from '../types'
 
 /**
- * Targets transcribed from the PRD (Section 3 + Appendix). Mifflin-St Jeor maintenance
- * estimates, cross-checked against the family's prior tracking app, then adjusted per
- * person's stated goal. Kept here (not hardcoded in the UI) so every screen shows the
- * same auditable numbers per NFR "transparent/auditable" requirement.
+ * Structural role config only — no names, ages, weights, or goals. This file is
+ * committed to a public repo and ships in the public JS bundle, so nothing identifying
+ * belongs here. Real profile data lives only in Firestore, entered once by the household
+ * through the Profile screen (see src/pages/ProfilePage.tsx + src/lib/store.ts).
  */
-export const HOUSEHOLD_MEMBERS: Member[] = [
-  {
-    id: 'alex',
-    displayName: 'Alex (Jr)',
-    age: 38,
-    heightIn: 73,
-    weightLb: 238,
-    activityLevel: 'Active',
-    goal: 'Fat loss, preserve muscle (~2 lb/wk)',
-    isMinor: false,
-    isFloorOnly: false,
-    privacyDelegates: ['alex'],
-    targetsByDayType: {
-      standard: { calories: 2700, proteinG: 200, fatG: 80, carbG: 295 },
-    },
-    formulaNote:
-      'Mifflin-St Jeor maintenance, adjusted for fat-loss deficit. Protein raised from an original 135g (20%) to 200g (30%) to better preserve muscle during the cut.',
-  },
-  {
-    id: 'melissa',
-    displayName: 'Melissa',
-    age: 38,
-    heightIn: 65,
-    weightLb: 246.9,
-    activityLevel: 'Lightly Active',
-    goal: 'Fat loss, preserve muscle (1 lb/wk) — 6 deficit days + 1 maintenance day/week',
-    isMinor: false,
-    isFloorOnly: false,
-    privacyDelegates: ['melissa', 'alex'],
-    targetsByDayType: {
-      deficit: { calories: 1980, proteinG: 210, fatG: 70, carbG: 128 },
-      maintenance: { calories: 2480, proteinG: 210, fatG: 80, carbG: 230 },
-    },
-    formulaNote:
-      'Mifflin-St Jeor maintenance, adjusted to a sustainable 1 lb/wk loss rate (revised down from an original 1.5 lb/wk target). 6 deficit days (1,980 cal) + 1 weekly maintenance day (~2,480 cal), placed manually on her highest-training-demand day. Protein (210g) stays fixed on both day types.',
-  },
-  {
-    id: 'julian',
-    displayName: 'Julian',
-    age: 17,
-    heightIn: 70,
-    weightLb: 190,
-    activityLevel: 'Athlete (2x/day training days)',
-    goal: 'Body recomposition — lean muscle gain, gradual fat loss',
-    isMinor: true,
-    isFloorOnly: false,
-    privacyDelegates: ['julian', 'alex'],
-    targetsByDayType: {
-      standard: { calories: 2900, proteinG: 175, fatG: 80, carbG: 335 },
-    },
-    formulaNote:
-      'Mifflin-St Jeor maintenance for an active 17-year-old athlete, adjusted for recomposition. High carb allocation (51%) supports 2x/day training days; carb timing shifts further via Section 6.2 once training-calendar integration ships.',
-  },
-  {
-    id: 'damian',
-    displayName: 'Damian',
-    age: 12,
-    heightIn: 64,
-    weightLb: 120,
-    activityLevel: 'Athlete',
-    goal: 'Performance fueling & growth — NOT caloric restriction',
-    isMinor: true,
-    isFloorOnly: true,
-    privacyDelegates: ['damian', 'alex'],
-    targetsByDayType: {
-      // No fixed adult-style target per PRD — "at/above maintenance", protein ~80-95g,
-      // fat "sufficient for growth", carbs "priority". These are a FLOOR, never a ceiling:
-      // the meal engine may add to this but must never scale it down as a deficit.
-      standard: { calories: 2800, proteinG: 90, fatG: 85, carbG: 415 },
-    },
-    formulaNote:
-      'Estimated maintenance via Mifflin-St Jeor for a 12-year-old athlete (~2,630 cal), rounded up to 2,800 cal as an at/above-maintenance floor. Protein set to the middle of the PRD\'s 80-95g range. This number is a floor, not a target to hit exactly — the app should never apply a deficit here. Consult a pediatrician or youth sports dietitian before any structured change to Damian\'s intake.',
-  },
+export const MEMBER_SLOTS: MemberSlot[] = [
+  { id: 'alex', isMinor: false, isFloorOnly: false, privacyDelegates: ['alex'] },
+  { id: 'melissa', isMinor: false, isFloorOnly: false, privacyDelegates: ['melissa', 'alex'] },
+  { id: 'julian', isMinor: true, isFloorOnly: false, privacyDelegates: ['julian', 'alex'] },
+  // Damian's isFloorOnly=true is a structural PRD rule (his targets are a floor, never a
+  // deficit) — not identifying on its own, so it's fine as static config.
+  { id: 'damian', isMinor: true, isFloorOnly: true, privacyDelegates: ['damian', 'alex'] },
 ]
 
-export function getMember(id: string): Member | undefined {
-  return HOUSEHOLD_MEMBERS.find((m) => m.id === id)
+export function getMemberSlot(id: string): MemberSlot | undefined {
+  return MEMBER_SLOTS.find((m) => m.id === id)
+}
+
+/**
+ * Generic, non-identifying placeholder profiles used only in local-demo mode (no Firebase
+ * configured), so the mechanics can be tried out without ever shipping real household data.
+ * Deliberately round numbers and role labels instead of real names.
+ */
+export const DEMO_PROFILES: Record<MemberId, MemberProfile> = {
+  alex: {
+    displayName: 'Guardian 1 (demo)',
+    age: 40,
+    heightIn: 70,
+    weightLb: 200,
+    activityLevel: 'Active',
+    goal: 'Example goal: fat loss, preserve muscle',
+    targetsByDayType: { standard: { calories: 2600, proteinG: 190, fatG: 80, carbG: 280 } },
+    formulaNote: 'Example data for demo mode. Replace with your own household data once Firebase is configured.',
+  },
+  melissa: {
+    displayName: 'Guardian 2 (demo)',
+    age: 40,
+    heightIn: 65,
+    weightLb: 170,
+    activityLevel: 'Lightly Active',
+    goal: 'Example goal: fat loss, preserve muscle',
+    targetsByDayType: {
+      deficit: { calories: 1900, proteinG: 180, fatG: 65, carbG: 140 },
+      maintenance: { calories: 2300, proteinG: 180, fatG: 75, carbG: 220 },
+    },
+    formulaNote: 'Example data for demo mode. Replace with your own household data once Firebase is configured.',
+  },
+  julian: {
+    displayName: 'Teen (demo)',
+    age: 16,
+    heightIn: 68,
+    weightLb: 160,
+    activityLevel: 'Athlete',
+    goal: 'Example goal: body recomposition',
+    targetsByDayType: { standard: { calories: 2700, proteinG: 165, fatG: 75, carbG: 310 } },
+    formulaNote: 'Example data for demo mode. Replace with your own household data once Firebase is configured.',
+  },
+  damian: {
+    displayName: 'Kid (demo)',
+    age: 11,
+    heightIn: 58,
+    weightLb: 90,
+    activityLevel: 'Athlete',
+    goal: 'Example goal: performance fueling & growth — not caloric restriction',
+    targetsByDayType: { standard: { calories: 2200, proteinG: 75, fatG: 70, carbG: 320 } },
+    formulaNote: 'Example data for demo mode — this is a floor, never a deficit. Consult a pediatrician before any real structured change to a child\'s intake.',
+  },
 }

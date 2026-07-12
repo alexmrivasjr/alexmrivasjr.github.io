@@ -22,6 +22,12 @@ training-calendar integration and Phase 5 pantry photo recognition).
   visible only to that person and to Alex (the admin). Damian's own profile never shows
   raw numbers — he sees qualitative, encouraging framing instead. Edits Damian makes to
   his own plan are logged to a digest only Alex can see; Damian is never shown it exists.
+- **No real household data ever lives in this git repo or the public JS bundle.**
+  `src/data/household.ts` only contains structural role config (which slot is a minor,
+  who can see whose private metrics) — no names, ages, weights, or macro numbers. The
+  actual profile data is entered once through the app (Profile screen) and stored only in
+  Firestore behind auth. Local demo mode uses obviously-generic placeholder people for
+  exactly this reason. See "Privacy & data model" below.
 
 ## Local development
 
@@ -64,6 +70,32 @@ One-time setup: repo **Settings → Pages → Source → GitHub Actions**. The s
 the root of `alexmrivasjr.github.io`. It deploys fine with no Firebase secrets set (demo
 mode); add the secrets above whenever you're ready for real cross-device sync.
 
+## Privacy & data model
+
+This app is public (it deploys to a personal GitHub Pages domain), so nothing identifying
+is allowed to live in source code that ships in the client bundle. The data model has
+three tiers, enforced by `firestore.rules`:
+
+1. **Public, no auth required** — `households/{id}/members/{memberId}`: just an id and a
+   chosen nickname (not necessarily a real name). This is the minimum needed to render the
+   login picker before anyone has signed in.
+2. **Household-authenticated** — `.../private/profile`: age, height, weight, activity,
+   goal, and macro targets. Readable by any signed-in household member (meal planning
+   needs everyone's targets), writable by that person or Alex.
+3. **Self + admin only** — `.../private/metrics`: body-fat %, exact weight, weight-trend.
+
+The first time each family member signs in, their PIN creates a real Firebase Auth
+account; Alex (as admin) is expected to set up the initial nicknames and targets for
+everyone via the Profile screen (switch who you're viewing with the dropdown at the top).
+Nothing about height, weight, age, or macros is ever committed to git.
+
+This also means the app doesn't assume it's *your* household specifically — a different
+family could deploy the same code with their own Firebase project and fill in their own
+data through the same Profile screen. Turning that into a proper multi-household product
+(self-serve signup, one shared hosted instance instead of one deploy per family, computed
+macro targets via a real formula instead of hand-entered numbers) is a distinct, larger
+piece of future work, not yet built.
+
 ## Known limitations (v1)
 
 - **Nutrition data is placeholder.** The PRD calls for USDA FoodData Central as the
@@ -76,9 +108,10 @@ mode); add the secrets above whenever you're ready for real cross-device sync.
   for a very high-protein, low-carb target like Melissa's (42% protein). The app shows
   exactly which meals land outside tolerance and what add-ons it used, so nothing is
   hidden, but a wider recipe/add-on library would tighten this further.
-- **Household is hardcoded to the four family members** in `src/data/household.ts` (per
-  PRD Section 9, "Out of Scope v1: support for household members outside the immediate
-  family of four").
+- **Still four member slots.** The app supports exactly four role slots (matching PRD
+  Section 9's v1 scope), now filled with whatever data any household enters rather than
+  hardcoded — but going beyond four people, or supporting many households in one hosted
+  instance, isn't built yet.
 - **Phase 4 (training calendar) and Phase 5 (pantry photo recognition)** are placeholder
   screens only — both explicitly depend on work that hasn't started yet (a separate
   companion workout app, and photo-recognition tooling).

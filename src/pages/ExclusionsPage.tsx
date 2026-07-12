@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { store } from '../lib/store'
-import { recordDamianEdit } from '../lib/digest'
+import { recordMonitoredEdit } from '../lib/digest'
 import type { Exclusion } from '../types'
 
 export default function ExclusionsPage() {
@@ -25,8 +25,8 @@ export default function ExclusionsPage() {
     e.preventDefault()
     if (!newLabel.trim() || !currentMember) return
     await store.addExclusion(scope as Exclusion['scope'], newLabel.trim(), currentMember.id)
-    if (currentMember.id === 'damian') {
-      await recordDamianEdit(`Damian added an exclusion: "${newLabel.trim()}".`)
+    if (currentMember.isFloorOnly) {
+      await recordMonitoredEdit(currentMember.id, `${currentMember.displayName} added an exclusion: "${newLabel.trim()}".`)
     }
     setNewLabel('')
     await load()

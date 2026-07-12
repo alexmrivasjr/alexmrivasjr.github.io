@@ -1,4 +1,4 @@
-import type { DigestEntry } from '../types'
+import type { DigestEntry, MemberId } from '../types'
 import { store } from './store'
 
 function isoWeekId(date = new Date()): string {
@@ -11,10 +11,11 @@ function isoWeekId(date = new Date()): string {
 }
 
 /**
- * Logs an edit Damian makes to his own plan into Alex's private weekly digest (PRD 6.3
- * Must-have). Damian is never shown or alerted that this exists.
+ * Logs an edit the floor-only/monitored member (Damian, in this household's role config)
+ * makes to their own plan into Alex's private weekly digest (PRD 6.3 Must-have). That
+ * member is never shown or alerted that this exists.
  */
-export async function recordDamianEdit(summary: string, trending: DigestEntry['trending'] = 'neutral'): Promise<void> {
-  const entry: DigestEntry = { weekId: isoWeekId(), memberId: 'damian', summary, trending, createdAt: new Date().toISOString() }
+export async function recordMonitoredEdit(memberId: MemberId, summary: string, trending: DigestEntry['trending'] = 'neutral'): Promise<void> {
+  const entry: DigestEntry = { weekId: isoWeekId(), memberId, summary, trending, createdAt: new Date().toISOString() }
   await store.addDigestEntry(entry)
 }
