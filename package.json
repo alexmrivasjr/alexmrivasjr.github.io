@@ -1,0 +1,20 @@
+{
+  "name": "soil-deal-scraper-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Daily scraper that checks Home Depot and Lowe's for garden bed soil, potting mix, and steer manure compost deals and pushes web notifications when prices drop below your thresholds.",
+  "type": "module",
+  "scripts": {
+    "scrape": "node scripts/scrape.js",
+    "send-push": "node scripts/send-push.js",
+    "generate-vapid-keys": "node scripts/generate-vapid-keys.js"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0",
+    "playwright": "^1.47.0",
+    "web-push": "^3.6.7"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "_comment": "CSS selectors used only by the Playwright (headless browser) fallback, when a retailer's page doesn't expose parseable JSON-LD data. Retailers change their markup often, so each field lists candidate selectors tried in order (first match wins). If the scraper starts returning zero results for a retailer, open that retailer's search page in a real browser, inspect a product tile with devtools, and add the new selector to the matching array here -- no code changes needed.",
+  "homedepot": {
+    "productCard": [
+      "[data-testid='product-pod']",
+      "div.product-pod",
+      "article.product-pod"
+    ],
+    "title": [
+      "[data-testid='attribute-product-label']",
+      "[data-testid='product-header']",
+      ".product-pod__title a"
+    ],
+    "price": [
+      "[data-testid='price-format__main-price']",
+      ".price-format__main-price",
+      "[data-testid='price']"
+    ],
+    "link": [
+      "a[data-testid='product-pod-image-link']",
+      "a.product-pod__link",
+      "a"
+    ]
+  },
+  "lowes": {
+    "productCard": [
+      "[data-testid='product-tile']",
+      "div.product-tile",
+      "article.tile-product"
+    ],
+    "title": [
+      "[data-testid='product-title']",
+      "a.product-title",
+      ".description a"
+    ],
+    "price": [
+      "[data-testid='main-price']",
+      "span.price",
+      ".product-price"
+    ],
+    "link": [
+      "a[data-testid='product-image-link']",
+      "a.product-image",
+      "a"
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "Soil & Compost Deal Tracker",
+  "short_name": "Deal Tracker",
+  "description": "Daily alerts when raised bed soil, potting mix, or steer manure compost drop below your price at Home Depot or Lowe's.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0f5132",
+  "theme_color": "#2e7d32",
+  "icons": [
+    { "src": "/assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "raised-bed-soil": {
+    "label": "Raised Bed Soil",
+    "threshold": 2.5,
+    "unit": "bag",
+    "retailers": {
+      "homedepot": "https://www.homedepot.com/s/raised%2520bed%2520soil",
+      "lowes": "https://www.lowes.com/search?searchTerm=raised%20bed%20soil"
+    }
+  },
+  "potting-mix": {
+    "label": "Potting Mix",
+    "threshold": 2.5,
+    "unit": "bag",
+    "retailers": {
+      "homedepot": "https://www.homedepot.com/s/potting%2520mix%2520soil",
+      "lowes": "https://www.lowes.com/search?searchTerm=potting%20mix%20soil"
+    }
+  },
+  "steer-manure-compost": {
+    "label": "Steer Manure Compost",
+    "threshold": 1.5,
+    "unit": "bag",
+    "retailers": {
+      "homedepot": "https://www.homedepot.com/s/steer%2520manure%2520compost",
+      "lowes": "https://www.lowes.com/search?searchTerm=steer%20manure%20compost"
+    }
+  }
+}
