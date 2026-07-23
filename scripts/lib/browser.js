@@ -43,11 +43,15 @@ export async function renderAndExtract(url, selectorSet, { timeoutMs = 30000 } =
   const results = [];
 
   try {
-    await page.goto(url, { waitUntil: "domcontentloaded", timeout: timeoutMs });
+    const response = await page.goto(url, { waitUntil: "domcontentloaded", timeout: timeoutMs });
 
     const cardSelector = await firstMatchingSelector(page, selectorSet.productCard);
     if (!cardSelector) {
-      console.warn(`[browser] no product cards matched any known selector for ${url}`);
+      const title = await page.title().catch(() => "");
+      const bodyText = (await page.locator("body").innerText().catch(() => "")).slice(0, 300).replace(/\s+/g, " ");
+      console.warn(
+        `[browser] no product cards matched any known selector for ${url} | HTTP ${response?.status()} | title="${title}" | body snippet: "${bodyText}"`
+      );
       return results;
     }
 
