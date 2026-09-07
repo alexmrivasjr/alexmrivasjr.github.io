@@ -1,7 +1,7 @@
 // Public VAPID key -- safe to expose client-side. Generated with
 // `npm run generate-vapid-keys`; the matching private key lives only in the
 // VAPID_PRIVATE_KEY GitHub Actions secret.
-const VAPID_PUBLIC_KEY = "BPGgyBZZ6MuG7x1SMnqzuosCUcaoV8TRh30qxwRSrByRPqrtIF047z81pEuQ4mWTXmG9lmIZT94RreqAuS5ilf4";
+const VAPID_PUBLIC_KEY = "BIdsfO9iFRqfd-CrN6fvttnIJ3Xg8p9WCoK-z35Yys_9wx5g0CURCg_NcdSSCreK_qe6I1ibP2EpDhi7FUQcjeI";
 
 function urlBase64ToUint8Array(base64String) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
