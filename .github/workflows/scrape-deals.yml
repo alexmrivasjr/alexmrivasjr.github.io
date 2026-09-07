@@ -32,6 +32,8 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Scrape retailers
+        env:
+          SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
         run: npm run scrape
 
       - name: Send push notification for new deals

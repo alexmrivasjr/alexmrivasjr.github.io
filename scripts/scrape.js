@@ -3,12 +3,15 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { scrapeCategoryUrl } from "./lib/retailer.js";
 import { closeBrowser } from "./lib/browser.js";
+import { fetchHomeDepotProduct } from "./lib/serpapi.js";
+import { sleep } from "./lib/http.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 
 const PRODUCTS_CONFIG = path.join(ROOT, "config", "products.json");
 const SELECTORS_CONFIG = path.join(ROOT, "config", "selectors.json");
+const SERPAPI_PRODUCTS_CONFIG = path.join(ROOT, "config", "serpapi-products.json");
 const DEALS_FILE = path.join(ROOT, "data", "deals.json");
 const NOTIFIED_FILE = path.join(ROOT, "data", "notified.json");
 const NEW_DEALS_FILE = path.join(ROOT, "data", "new-deals.json");
@@ -65,6 +68,42 @@ async function main() {
   }
 
   await closeBrowser();
+
+  const serpapiConfig = await readJson(SERPAPI_PRODUCTS_CONFIG, null);
+  const serpapiKey = process.env.SERPAPI_KEY;
+
+  if (serpapiConfig?.products?.length) {
+    if (!serpapiKey) {
+      console.warn("[serpapi] SERPAPI_KEY not set, skipping exact-product checks");
+    } else {
+      for (const product of serpapiConfig.products) {
+        await sleep(1000);
+        console.log(`Checking Home Depot product ${product.productId} ("${product.label}") via SerpApi...`);
+        const result = await fetchHomeDepotProduct(product.productId, {
+          storeId: serpapiConfig.store.id,
+          zip: serpapiConfig.store.zip,
+          apiKey: serpapiKey,
+        });
+        if (!result) {
+          errors.push({ category: product.category, retailer: "homedepot", error: "SerpApi lookup failed" });
+          continue;
+        }
+        console.log(`  $${result.price} (threshold $${product.threshold})`);
+        if (result.price <= product.threshold) {
+          currentDeals.push({
+            category: product.category,
+            categoryLabel: product.label,
+            retailer: "homedepot",
+            title: result.title,
+            price: result.price,
+            threshold: product.threshold,
+            url: result.url,
+            foundAt: new Date().toISOString(),
+          });
+        }
+      }
+    }
+  }
 
   // Figure out which of today's deals are genuinely new, so we don't push a
   // notification every single day for a deal that's still active.
