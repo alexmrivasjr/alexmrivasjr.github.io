@@ -7,7 +7,7 @@ const SERPAPI_URL = "https://serpapi.com/search.json";
  * show up in generic search results. Returns null (instead of throwing) on
  * any failure so callers can skip that product and keep checking the rest.
  */
-export async function fetchHomeDepotProduct(productId, { storeId, zip, apiKey, timeoutMs = 20000 }) {
+export async function fetchHomeDepotProduct(productId, { storeId, zip, apiKey, timeoutMs = 90000 }) {
   const params = new URLSearchParams({
     engine: "home_depot_product",
     product_id: productId,
