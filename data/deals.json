@@ -1,5 +1,16 @@
 {
-  "generatedAt": "2026-09-06T16:00:04.605Z",
+  "generatedAt": "2026-09-07T16:13:20.019Z",
   "deals": [],
-  "errors": []
+  "errors": [
+    {
+      "category": "sta-green-garden-soil-2cf",
+      "retailer": "lowes",
+      "error": "product page lookup failed"
+    },
+    {
+      "category": "sta-green-garden-soil-1cf",
+      "retailer": "lowes",
+      "error": "product page lookup failed"
+    }
+  ]
 }
