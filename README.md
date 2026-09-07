@@ -25,6 +25,11 @@ you've enabled it) sends a browser push notification.
   local store — including clearance markdowns that never show up in search
   results. This is optional: without a `SERPAPI_KEY` secret, this step is
   skipped and only the search-result scraping runs.
+- It checks specific Lowe's SKUs the same way (`config/lowes-products.json`),
+  but by scraping the product's own detail page directly (same JSON-LD
+  parsing as the search-result scraper, with the same headless-browser
+  fallback) instead of via SerpApi — SerpApi doesn't offer a Lowe's product
+  API, only Home Depot's.
 - Matches at/under threshold are written to `data/deals.json`, which the site
   reads client-side.
 - New deals (ones not already notified) trigger a **Web Push** notification
@@ -88,6 +93,12 @@ Edit `config/products.json`. Each entry has a `threshold` (dollars) and a
 For exact-SKU tracking via SerpApi, edit `config/serpapi-products.json`
 instead: set your store's `id` and `zip`, then list products with their
 Home Depot `productId` (from the product's URL) and a `threshold`.
+
+For exact-SKU tracking on Lowe's, edit `config/lowes-products.json`: list
+products with their Lowe's `productId` (from the product's URL, e.g.
+`lowes.com/pd/.../<productId>`) and a `threshold`. No API key needed, but
+being direct product-page scraping it's subject to the same bot-detection
+caveats as the search-result scraper below.
 
 ## If scraping stops finding anything
 

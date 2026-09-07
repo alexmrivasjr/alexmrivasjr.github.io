@@ -22,6 +22,26 @@ export async function closeBrowser() {
   }
 }
 
+/**
+ * Renders a single page with headless Chromium and returns its final HTML,
+ * for callers that just need to run their own extraction (e.g. JSON-LD) on
+ * client-rendered content rather than pulling DOM nodes via CSS selectors.
+ */
+export async function renderHtml(url, { timeoutMs = 30000 } = {}) {
+  const browser = await getBrowser();
+  const context = await browser.newContext({ userAgent: USER_AGENT });
+  const page = await context.newPage();
+  try {
+    await page.goto(url, { waitUntil: "domcontentloaded", timeout: timeoutMs });
+    return await page.content();
+  } catch (err) {
+    console.warn(`[browser] ${url} -> ${err.message}`);
+    return null;
+  } finally {
+    await context.close();
+  }
+}
+
 async function firstMatchingSelector(page, selectors) {
   for (const selector of selectors) {
     const count = await page.locator(selector).count();

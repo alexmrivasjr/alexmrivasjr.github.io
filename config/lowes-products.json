@@ -1,0 +1,17 @@
+{
+  "_comment": "Exact-SKU tracking for Lowe's products by product ID, scraped directly from the product's detail page (schema.org JSON-LD) since SerpApi has no Lowe's product API (only Home Depot). Find a product's ID in its Lowe's URL: lowes.com/pd/.../<product_id> -- lowes.com/pd/<product_id> alone redirects to the full page.",
+  "products": [
+    {
+      "category": "sta-green-garden-soil-2cf",
+      "label": "Sta-Green Garden Soil, 2 cu ft Vegetable and Flower Garden Soil",
+      "productId": "132959",
+      "threshold": 2.5
+    },
+    {
+      "category": "sta-green-garden-soil-1cf",
+      "label": "Sta-Green, 1-cu ft Vegetable and Flower Garden Soil",
+      "productId": "86633",
+      "threshold": 2.5
+    }
+  ]
+}

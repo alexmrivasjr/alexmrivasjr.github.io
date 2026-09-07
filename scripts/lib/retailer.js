@@ -1,6 +1,6 @@
 import { fetchHtml, sleep } from "./http.js";
 import { extractProductsFromJsonLd } from "./jsonld.js";
-import { renderAndExtract } from "./browser.js";
+import { renderAndExtract, renderHtml } from "./browser.js";
 
 /**
  * Scrapes a single retailer search-results URL.
@@ -23,4 +23,27 @@ export async function scrapeCategoryUrl(url, { retailerKey, selectors, politeDel
   console.warn(`[${retailerKey}] no JSON-LD results, falling back to headless browser for ${url}`);
   const products = await renderAndExtract(url, selectors[retailerKey]);
   return { products, method: "browser" };
+}
+
+/**
+ * Scrapes a single product detail page (not a search-results page) via its
+ * schema.org JSON-LD, for exact-SKU tracking by product ID/URL. Falls back
+ * to a headless render if the plain request comes back empty -- the product
+ * page markup itself needs no per-retailer CSS selectors since JSON-LD is
+ * generic across retailers that publish it.
+ */
+export async function scrapeProductPage(url, { politeDelayMs = 1500 } = {}) {
+  await sleep(politeDelayMs);
+
+  const html = await fetchHtml(url);
+  if (html) {
+    const [product] = extractProductsFromJsonLd(html);
+    if (product) return { product, method: "http+jsonld" };
+  }
+
+  console.warn(`[product] no JSON-LD product found, falling back to headless browser for ${url}`);
+  const renderedHtml = await renderHtml(url);
+  if (!renderedHtml) return { product: null, method: "browser" };
+  const [product] = extractProductsFromJsonLd(renderedHtml);
+  return { product: product || null, method: "browser" };
 }

@@ -1,7 +1,7 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { scrapeCategoryUrl } from "./lib/retailer.js";
+import { scrapeCategoryUrl, scrapeProductPage } from "./lib/retailer.js";
 import { closeBrowser } from "./lib/browser.js";
 import { fetchHomeDepotProduct } from "./lib/serpapi.js";
 import { sleep } from "./lib/http.js";
@@ -12,6 +12,7 @@ const ROOT = path.resolve(__dirname, "..");
 const PRODUCTS_CONFIG = path.join(ROOT, "config", "products.json");
 const SELECTORS_CONFIG = path.join(ROOT, "config", "selectors.json");
 const SERPAPI_PRODUCTS_CONFIG = path.join(ROOT, "config", "serpapi-products.json");
+const LOWES_PRODUCTS_CONFIG = path.join(ROOT, "config", "lowes-products.json");
 const DEALS_FILE = path.join(ROOT, "data", "deals.json");
 const NOTIFIED_FILE = path.join(ROOT, "data", "notified.json");
 const NEW_DEALS_FILE = path.join(ROOT, "data", "new-deals.json");
@@ -101,6 +102,33 @@ async function main() {
             foundAt: new Date().toISOString(),
           });
         }
+      }
+    }
+  }
+
+  const lowesConfig = await readJson(LOWES_PRODUCTS_CONFIG, null);
+
+  if (lowesConfig?.products?.length) {
+    for (const product of lowesConfig.products) {
+      const url = `https://www.lowes.com/pd/${product.productId}`;
+      console.log(`Checking Lowe's product ${product.productId} ("${product.label}")...`);
+      const { product: result, method } = await scrapeProductPage(url);
+      if (!result) {
+        errors.push({ category: product.category, retailer: "lowes", error: "product page lookup failed" });
+        continue;
+      }
+      console.log(`  $${result.price} (${method}, threshold $${product.threshold})`);
+      if (result.price <= product.threshold) {
+        currentDeals.push({
+          category: product.category,
+          categoryLabel: product.label,
+          retailer: "lowes",
+          title: result.title,
+          price: result.price,
+          threshold: product.threshold,
+          url: result.url || url,
+          foundAt: new Date().toISOString(),
+        });
       }
     }
   }
