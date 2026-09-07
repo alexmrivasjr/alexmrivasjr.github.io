@@ -19,6 +19,17 @@ you've enabled it) sends a browser push notification.
   parsing the page's embedded `schema.org` product data (JSON-LD), then
   falling back to a headless Chromium render (Playwright) with CSS selectors
   if the simple request comes back empty or blocked.
+- It also checks specific Home Depot SKUs by exact product ID via
+  [SerpApi](https://serpapi.com/home-depot-product-api)'s Home Depot Product
+  API (`config/serpapi-products.json`), which returns the real price at your
+  local store — including clearance markdowns that never show up in search
+  results. This is optional: without a `SERPAPI_KEY` secret, this step is
+  skipped and only the search-result scraping runs.
+- It checks specific Lowe's SKUs the same way (`config/lowes-products.json`),
+  but by scraping the product's own detail page directly (same JSON-LD
+  parsing as the search-result scraper, with the same headless-browser
+  fallback) instead of via SerpApi — SerpApi doesn't offer a Lowe's product
+  API, only Home Depot's.
 - Matches at/under threshold are written to `data/deals.json`, which the site
   reads client-side.
 - New deals (ones not already notified) trigger a **Web Push** notification
@@ -39,6 +50,10 @@ pay for.
    - `VAPID_PRIVATE_KEY` — see below, was generated for you already.
    - `VAPID_SUBJECT` — set to `mailto:alexmrivasjr@gmail.com`.
    - `PUSH_SUBSCRIPTION` — added in step 4, after you subscribe.
+   - `SERPAPI_KEY` — optional, only needed for the exact-product checks in
+     `config/serpapi-products.json`. Get a key from
+     [serpapi.com](https://serpapi.com/). Without it, that step is skipped
+     and the rest of the tracker works as before.
 
    The matching **public** key is already committed in
    `assets/js/app.js` (public keys are safe to expose). The **private** key
@@ -74,6 +89,16 @@ pay for.
 
 Edit `config/products.json`. Each entry has a `threshold` (dollars) and a
 `retailers` map of search URLs. Add a new category the same way.
+
+For exact-SKU tracking via SerpApi, edit `config/serpapi-products.json`
+instead: set your store's `id` and `zip`, then list products with their
+Home Depot `productId` (from the product's URL) and a `threshold`.
+
+For exact-SKU tracking on Lowe's, edit `config/lowes-products.json`: list
+products with their Lowe's `productId` (from the product's URL, e.g.
+`lowes.com/pd/.../<productId>`) and a `threshold`. No API key needed, but
+being direct product-page scraping it's subject to the same bot-detection
+caveats as the search-result scraper below.
 
 ## If scraping stops finding anything
 

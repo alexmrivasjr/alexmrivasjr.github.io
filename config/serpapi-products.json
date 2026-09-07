@@ -1,0 +1,33 @@
+{
+  "_comment": "Exact-product tracking via SerpApi's Home Depot Product API (needs the SERPAPI_KEY secret). Use this for specific SKUs at your local store, including clearance markdowns that generic search-result scraping won't surface. Find a product's ID in its Home Depot URL: homedepot.com/p/.../<product_id>.",
+  "store": {
+    "id": "4739",
+    "zip": "99336"
+  },
+  "products": [
+    {
+      "category": "organic-garden-soil-2cf",
+      "label": "All Natural Garden Soil, Organic - 2 cf",
+      "productId": "205617876",
+      "threshold": 2.0
+    },
+    {
+      "category": "organic-garden-soil-1cf",
+      "label": "All Natural Garden Soil, Organic - 1 cf",
+      "productId": "205617894",
+      "threshold": 2.0
+    },
+    {
+      "category": "organic-garden-soil-3cf",
+      "label": "All Natural Garden Soil, Organic - 3 cf",
+      "productId": "100427391",
+      "threshold": 2.0
+    },
+    {
+      "category": "organic-raised-bed-potting-mix-2cf",
+      "label": "Organic Raised Bed & Potting Mix - 2 cf",
+      "productId": "205617903",
+      "threshold": 2.0
+    }
+  ]
+}
