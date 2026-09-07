@@ -4,7 +4,7 @@ import path from "node:path";
 import { scrapeCategoryUrl, scrapeProductPage } from "./lib/retailer.js";
 import { closeBrowser } from "./lib/browser.js";
 import { fetchHomeDepotProduct } from "./lib/serpapi.js";
-import { sleep } from "./lib/http.js";
+import { sleep, withTimeout } from "./lib/http.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -68,8 +68,6 @@ async function main() {
     }
   }
 
-  await closeBrowser();
-
   const serpapiConfig = await readJson(SERPAPI_PRODUCTS_CONFIG, null);
   const serpapiKey = process.env.SERPAPI_KEY;
 
@@ -112,7 +110,17 @@ async function main() {
     for (const product of lowesConfig.products) {
       const url = `https://www.lowes.com/pd/${product.productId}`;
       console.log(`Checking Lowe's product ${product.productId} ("${product.label}")...`);
-      const { product: result, method } = await scrapeProductPage(url);
+      let result, method;
+      try {
+        ({ product: result, method } = await withTimeout(
+          scrapeProductPage(url),
+          60000,
+          `Lowe's product ${product.productId} lookup`
+        ));
+      } catch (err) {
+        errors.push({ category: product.category, retailer: "lowes", error: err.message });
+        continue;
+      }
       if (!result) {
         errors.push({ category: product.category, retailer: "lowes", error: "product page lookup failed" });
         continue;
@@ -132,6 +140,11 @@ async function main() {
       }
     }
   }
+
+  // scrapeProductPage's browser fallback may have launched a fresh Chromium
+  // instance (the one from the retailer loop above was already closed) --
+  // without this, that browser process stays alive and Node never exits.
+  await closeBrowser();
 
   // Figure out which of today's deals are genuinely new, so we don't push a
   // notification every single day for a deal that's still active.
