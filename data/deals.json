@@ -1,5 +1,26 @@
 {
-  "generatedAt": "2026-09-07T18:07:18.417Z",
+  "generatedAt": "2026-09-07T21:32:56.353Z",
   "deals": [],
-  "errors": []
+  "errors": [
+    {
+      "category": "organic-garden-soil-1cf",
+      "retailer": "homedepot",
+      "error": "SerpApi lookup failed"
+    },
+    {
+      "category": "organic-garden-soil-3cf",
+      "retailer": "homedepot",
+      "error": "SerpApi lookup failed"
+    },
+    {
+      "category": "sta-green-garden-soil-2cf",
+      "retailer": "lowes",
+      "error": "product page lookup failed"
+    },
+    {
+      "category": "sta-green-garden-soil-1cf",
+      "retailer": "lowes",
+      "error": "product page lookup failed"
+    }
+  ]
 }
