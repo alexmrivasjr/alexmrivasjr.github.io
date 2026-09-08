@@ -1,17 +1,6 @@
 {
-  "generatedAt": "2026-09-07T22:04:50.006Z",
-  "deals": [
-    {
-      "category": "organic-raised-bed-potting-mix-2cf",
-      "categoryLabel": "Organic Raised Bed & Potting Mix - 2 cf",
-      "retailer": "homedepot",
-      "title": "Organic Raised Bed and Potting Mix, All Natural Premium Soil 2 cu. ft., OMRI Listed",
-      "price": 9.97,
-      "threshold": 15,
-      "url": "https://www.homedepot.com/p/Kellogg-Garden-Organics-Organic-Raised-Bed-and-Potting-Mix-All-Natural-Premium-Soil-2-cu-ft-OMRI-Listed-6490/205617903",
-      "foundAt": "2026-09-07T22:04:46.701Z"
-    }
-  ],
+  "generatedAt": "2026-09-08T17:10:02.309Z",
+  "deals": [],
   "errors": [
     {
       "category": "organic-garden-soil-1cf",
@@ -20,6 +9,11 @@
     },
     {
       "category": "organic-garden-soil-3cf",
+      "retailer": "homedepot",
+      "error": "SerpApi lookup failed"
+    },
+    {
+      "category": "organic-raised-bed-potting-mix-2cf",
       "retailer": "homedepot",
       "error": "SerpApi lookup failed"
     },
