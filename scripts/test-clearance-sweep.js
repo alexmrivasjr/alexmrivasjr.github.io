@@ -1,7 +1,7 @@
 const SERPAPI_KEY = process.env.SERPAPI_KEY;
 const STORE_ID = process.env.HD_STORE_ID || "4739";
 const ZIP = process.env.HD_ZIP || "99336";
-const CLEARANCE_CATEGORY = "N-5yc1vZ1z11adf"; // Home Depot's own internal Clearance category node ID
+const CLEARANCE_CATEGORY = "N-5yc1vZbx6kZ1z11adf"; // "Outdoors > Garden Center > Clearance" -- narrower than storewide Clearance (N-5yc1vZ1z11adf), which 503'd
 
 if (!SERPAPI_KEY) {
   console.error("SERPAPI_KEY not set");
