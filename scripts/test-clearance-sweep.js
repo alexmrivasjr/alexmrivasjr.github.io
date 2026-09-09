@@ -1,7 +1,7 @@
 const SERPAPI_KEY = process.env.SERPAPI_KEY;
 const STORE_ID = process.env.HD_STORE_ID || "4739";
 const ZIP = process.env.HD_ZIP || "99336";
-const UPPERBOUND = process.env.HD_UPPERBOUND || "5";
+const CLEARANCE_CATEGORY = "N-5yc1vZ1z11adf"; // Home Depot's own internal Clearance category node ID
 
 if (!SERPAPI_KEY) {
   console.error("SERPAPI_KEY not set");
@@ -11,16 +11,14 @@ if (!SERPAPI_KEY) {
 async function main() {
   const params = new URLSearchParams({
     engine: "home_depot",
-    q: "clearance",
+    q: CLEARANCE_CATEGORY,
     store_id: STORE_ID,
     delivery_zip: ZIP,
-    lowerbound: "0",
-    upperbound: UPPERBOUND,
     api_key: SERPAPI_KEY,
   });
 
   const url = `https://serpapi.com/search.json?${params}`;
-  console.log(`Making ONE test call: q=clearance, store=${STORE_ID}, zip=${ZIP}, price $0-$${UPPERBOUND}`);
+  console.log(`Making ONE test call: q=${CLEARANCE_CATEGORY} (Clearance category), store=${STORE_ID}, zip=${ZIP}, no price cap`);
 
   const res = await fetch(url);
   console.log(`HTTP status: ${res.status}`);
@@ -44,8 +42,11 @@ async function main() {
   console.log(Object.keys(data));
 
   if (products.length > 0) {
-    console.log("\nSample of first 3 items found:");
-    for (const p of products.slice(0, 3)) {
+    console.log("\nFull first item (to find original/list price field name):");
+    console.log(JSON.stringify(products[0], null, 2));
+
+    console.log("\nSample of first 5 items found:");
+    for (const p of products.slice(0, 5)) {
       console.log(`  - ${p.title} | $${p.price} | ${p.link}`);
     }
   }
