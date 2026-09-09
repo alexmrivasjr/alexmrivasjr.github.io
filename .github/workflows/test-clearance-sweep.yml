@@ -14,8 +14,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: "npm"
 
-      - name: Run one-call clearance test
-        env:
-          SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install headless Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Test direct scrape of Home Depot clearance category page
         run: node scripts/test-clearance-sweep.js

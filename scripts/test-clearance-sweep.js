@@ -1,55 +1,47 @@
-const SERPAPI_KEY = process.env.SERPAPI_KEY;
-const STORE_ID = process.env.HD_STORE_ID || "4739";
-const ZIP = process.env.HD_ZIP || "99336";
-const CLEARANCE_CATEGORY = "N-5yc1vZbx6kZ1z11adf"; // "Outdoors > Garden Center > Clearance" -- narrower than storewide Clearance (N-5yc1vZ1z11adf), which 503'd
+import { fetchHtml } from "./lib/http.js";
+import { extractProductsFromJsonLd } from "./lib/jsonld.js";
+import { renderHtml } from "./lib/browser.js";
+import { closeBrowser } from "./lib/browser.js";
 
-if (!SERPAPI_KEY) {
-  console.error("SERPAPI_KEY not set");
-  process.exit(1);
-}
+// Home Depot's real "Outdoors > Garden Center > Clearance" category page --
+// a /b/ browse URL, not a /s/ search-result URL. Every 403 we've hit so far
+// (both our own scraping and SerpApi's) was against /s/ search pages; this
+// tests whether a /b/ category page gets the same treatment, at zero
+// SerpApi cost since it doesn't touch SerpApi at all.
+const URL = "https://www.homedepot.com/b/Outdoors-Garden-Center/Clearance/N-5yc1vZbx6kZ1z11adf";
 
 async function main() {
-  const params = new URLSearchParams({
-    engine: "home_depot",
-    q: CLEARANCE_CATEGORY,
-    store_id: STORE_ID,
-    delivery_zip: ZIP,
-    api_key: SERPAPI_KEY,
-  });
-
-  const url = `https://serpapi.com/search.json?${params}`;
-  console.log(`Making ONE test call: q=${CLEARANCE_CATEGORY} (Clearance category), store=${STORE_ID}, zip=${ZIP}, no price cap`);
-
-  const res = await fetch(url);
-  console.log(`HTTP status: ${res.status}`);
-  const data = await res.json();
-
-  if (data.error) {
-    console.error(`SerpApi error: ${data.error}`);
-    process.exit(1);
+  console.log(`Plain fetch: ${URL}`);
+  const html = await fetchHtml(URL);
+  if (html) {
+    const products = extractProductsFromJsonLd(html);
+    console.log(`Plain fetch succeeded, ${products.length} JSON-LD products found`);
+    if (products.length > 0) console.log(JSON.stringify(products.slice(0, 5), null, 2));
+  } else {
+    console.log("Plain fetch returned null (blocked or empty) -- trying headless browser...");
   }
 
-  const products = data.products || [];
-  console.log(`\nItems returned on this page: ${products.length}`);
-
-  console.log("\nFull search_information block:");
-  console.log(JSON.stringify(data.search_information || {}, null, 2));
-
-  console.log("\nFull pagination/serpapi_pagination block (if present):");
-  console.log(JSON.stringify(data.pagination || data.serpapi_pagination || {}, null, 2));
-
-  console.log("\nTop-level response keys (for debugging field names):");
-  console.log(Object.keys(data));
-
-  if (products.length > 0) {
-    console.log("\nFull first item (to find original/list price field name):");
-    console.log(JSON.stringify(products[0], null, 2));
-
-    console.log("\nSample of first 5 items found:");
-    for (const p of products.slice(0, 5)) {
-      console.log(`  - ${p.title} | $${p.price} | ${p.link}`);
+  console.log(`\nHeadless browser render: ${URL}`);
+  const renderedHtml = await renderHtml(URL);
+  if (!renderedHtml) {
+    console.log("Headless browser render returned null (navigation failed or timed out)");
+  } else {
+    console.log(`Rendered HTML length: ${renderedHtml.length}`);
+    const products = extractProductsFromJsonLd(renderedHtml);
+    console.log(`${products.length} JSON-LD products found in rendered HTML`);
+    if (products.length > 0) {
+      console.log("\nSample of first 5 items found:");
+      for (const p of products.slice(0, 5)) {
+        console.log(`  - ${p.title} | $${p.price} | ${p.url}`);
+      }
+    } else {
+      // No JSON-LD -- dump a snippet so we can see what we actually got back
+      console.log("\nFirst 500 chars of rendered HTML:");
+      console.log(renderedHtml.slice(0, 500));
     }
   }
+
+  await closeBrowser();
 }
 
 main().catch((err) => {
