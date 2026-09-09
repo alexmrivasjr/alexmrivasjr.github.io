@@ -1,7 +1,7 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { scrapeCategoryUrl, scrapeProductPage } from "./lib/retailer.js";
+import { scrapeProductPage } from "./lib/retailer.js";
 import { closeBrowser } from "./lib/browser.js";
 import { fetchHomeDepotProduct } from "./lib/serpapi.js";
 import { sleep, withTimeout } from "./lib/http.js";
@@ -9,8 +9,6 @@ import { sleep, withTimeout } from "./lib/http.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 
-const PRODUCTS_CONFIG = path.join(ROOT, "config", "products.json");
-const SELECTORS_CONFIG = path.join(ROOT, "config", "selectors.json");
 const SERPAPI_PRODUCTS_CONFIG = path.join(ROOT, "config", "serpapi-products.json");
 const LOWES_PRODUCTS_CONFIG = path.join(ROOT, "config", "lowes-products.json");
 const DEALS_FILE = path.join(ROOT, "data", "deals.json");
@@ -30,43 +28,10 @@ function dealKey(deal) {
 }
 
 async function main() {
-  const products = await readJson(PRODUCTS_CONFIG, {});
-  const selectors = await readJson(SELECTORS_CONFIG, {});
   const previouslyNotified = await readJson(NOTIFIED_FILE, {});
 
   const currentDeals = [];
   const errors = [];
-
-  for (const [categoryKey, category] of Object.entries(products)) {
-    for (const [retailerKey, url] of Object.entries(category.retailers)) {
-      console.log(`Scraping ${retailerKey} for "${category.label}"...`);
-      let result;
-      try {
-        result = await scrapeCategoryUrl(url, { retailerKey, selectors });
-      } catch (err) {
-        errors.push({ category: categoryKey, retailer: retailerKey, error: err.message });
-        continue;
-      }
-
-      const matches = result.products.filter((p) => p.price <= category.threshold);
-      console.log(
-        `  ${result.products.length} products parsed (${result.method}), ${matches.length} at/under $${category.threshold}`
-      );
-
-      for (const match of matches) {
-        currentDeals.push({
-          category: categoryKey,
-          categoryLabel: category.label,
-          retailer: retailerKey,
-          title: match.title,
-          price: match.price,
-          threshold: category.threshold,
-          url: match.url,
-          foundAt: new Date().toISOString(),
-        });
-      }
-    }
-  }
 
   const serpapiConfig = await readJson(SERPAPI_PRODUCTS_CONFIG, null);
   const serpapiKey = process.env.SERPAPI_KEY;
@@ -141,9 +106,8 @@ async function main() {
     }
   }
 
-  // scrapeProductPage's browser fallback may have launched a fresh Chromium
-  // instance (the one from the retailer loop above was already closed) --
-  // without this, that browser process stays alive and Node never exits.
+  // scrapeProductPage's browser fallback may have launched Chromium --
+  // without closing it, that browser process stays alive and Node never exits.
   await closeBrowser();
 
   // Figure out which of today's deals are genuinely new, so we don't push a

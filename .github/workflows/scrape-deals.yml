@@ -2,7 +2,7 @@ name: Scrape soil & compost deals
 
 on:
   schedule:
-    - cron: "0 13 * * *" # ~6am Pacific / 9am Eastern, daily
+    - cron: "0 13 * * 1,2,4,5" # ~6am Pacific / 9am Eastern, Mon/Tue/Thu/Fri
   workflow_dispatch: {}
 
 permissions:

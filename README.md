@@ -1,35 +1,36 @@
 # alexmrivasjr.github.io — Soil & Compost Deal Tracker
 
-A small site + bot that checks Home Depot and Lowe's once a day for deals on:
+A small site + bot that checks specific Home Depot and Lowe's products, by
+exact SKU, for price drops:
 
-| Category | Alert threshold |
-|---|---|
-| Raised bed soil | $2.50 / bag |
-| Potting mix | $2.50 / bag |
-| Steer manure compost | $1.50 / bag |
+| Product | Retailer | Threshold |
+|---|---|---|
+| All Natural Garden Soil, Organic - 2 cf | Home Depot | $2.00 |
+| All Natural Garden Soil, Organic - 1 cf | Home Depot | $2.00 |
+| All Natural Garden Soil, Organic - 3 cf | Home Depot | $2.00 |
+| Organic Raised Bed & Potting Mix - 2 cf | Home Depot | $2.00 |
+| Sta-Green Garden Soil, 2 cu ft | Lowe's | $2.50 |
+| Sta-Green, 1-cu ft | Lowe's | $2.50 |
 
 When something drops at or below its threshold, it shows up on the site and (if
 you've enabled it) sends a browser push notification.
 
 ## How it works
 
-- **GitHub Actions** (`.github/workflows/scrape-deals.yml`) runs daily on a
-  cron schedule (and on-demand via "Run workflow"). It scrapes each retailer's
-  search results for each category, first trying a plain HTTP request +
-  parsing the page's embedded `schema.org` product data (JSON-LD), then
-  falling back to a headless Chromium render (Playwright) with CSS selectors
-  if the simple request comes back empty or blocked.
-- It also checks specific Home Depot SKUs by exact product ID via
+- **GitHub Actions** (`.github/workflows/scrape-deals.yml`) runs
+  Mon/Tue/Thu/Fri on a cron schedule (and on-demand via "Run workflow").
+- Home Depot products are checked by exact product ID via
   [SerpApi](https://serpapi.com/home-depot-product-api)'s Home Depot Product
   API (`config/serpapi-products.json`), which returns the real price at your
   local store — including clearance markdowns that never show up in search
-  results. This is optional: without a `SERPAPI_KEY` secret, this step is
-  skipped and only the search-result scraping runs.
-- It checks specific Lowe's SKUs the same way (`config/lowes-products.json`),
-  but by scraping the product's own detail page directly (same JSON-LD
-  parsing as the search-result scraper, with the same headless-browser
-  fallback) instead of via SerpApi — SerpApi doesn't offer a Lowe's product
-  API, only Home Depot's.
+  results. This needs a `SERPAPI_KEY` secret; without it, this step is
+  skipped entirely.
+- Lowe's products are checked by scraping the product's own detail page
+  directly (`config/lowes-products.json`) — parsing the page's embedded
+  `schema.org` product data (JSON-LD), falling back to a headless Chromium
+  render (Playwright) if the plain request comes back empty or blocked.
+  SerpApi doesn't offer a Lowe's product API, only Home Depot's, so this
+  path doesn't need any API key.
 - Matches at/under threshold are written to `data/deals.json`, which the site
   reads client-side.
 - New deals (ones not already notified) trigger a **Web Push** notification
@@ -47,19 +48,18 @@ pay for.
    directly from the root of `main`.
 
 2. **Add repository secrets** (Settings → Secrets and variables → Actions):
+   - `SERPAPI_KEY` — needed for the Home Depot checks. Get a key from
+     [serpapi.com](https://serpapi.com/).
    - `VAPID_PRIVATE_KEY` — see below, was generated for you already.
+   - `VAPID_PUBLIC_KEY` — same value as the `VAPID_PUBLIC_KEY` constant
+     committed in `assets/js/app.js` (the send-push script needs it as an
+     env var; the copy in `app.js` is for the browser).
    - `VAPID_SUBJECT` — set to `mailto:alexmrivasjr@gmail.com`.
    - `PUSH_SUBSCRIPTION` — added in step 4, after you subscribe.
-   - `SERPAPI_KEY` — optional, only needed for the exact-product checks in
-     `config/serpapi-products.json`. Get a key from
-     [serpapi.com](https://serpapi.com/). Without it, that step is skipped
-     and the rest of the tracker works as before.
 
-   The matching **public** key is already committed in
-   `assets/js/app.js` (public keys are safe to expose). The **private** key
-   was generated during development and was shown to you in chat — it is
-   **not** committed anywhere in this repo. If you ever need a fresh keypair
-   (e.g. the private key leaks), run:
+   The **private** VAPID key was generated during development and shown to
+   you in chat — it is **not** committed anywhere in this repo. If you ever
+   need a fresh keypair (e.g. the private key leaks), run:
    ```
    npm install
    npm run generate-vapid-keys
@@ -87,40 +87,34 @@ pay for.
 
 ## Adjusting products or price thresholds
 
-Edit `config/products.json`. Each entry has a `threshold` (dollars) and a
-`retailers` map of search URLs. Add a new category the same way.
+Edit `config/serpapi-products.json` for Home Depot: set your store's `id`
+and `zip`, then list products with their Home Depot `productId` (from the
+product's URL) and a `threshold`.
 
-For exact-SKU tracking via SerpApi, edit `config/serpapi-products.json`
-instead: set your store's `id` and `zip`, then list products with their
-Home Depot `productId` (from the product's URL) and a `threshold`.
-
-For exact-SKU tracking on Lowe's, edit `config/lowes-products.json`: list
-products with their Lowe's `productId` (from the product's URL, e.g.
+Edit `config/lowes-products.json` for Lowe's: list products with their
+Lowe's `productId` (from the product's URL, e.g.
 `lowes.com/pd/.../<productId>`) and a `threshold`. No API key needed, but
 being direct product-page scraping it's subject to the same bot-detection
-caveats as the search-result scraper below.
+caveats below.
 
 ## If scraping stops finding anything
 
 Home Depot and Lowe's both run bot-detection (Cloudflare/Akamai/PerimeterX)
 that can change behavior at any time, and their page markup changes
-periodically. If `data/deals.json` keeps showing entries in `errors`, or the
-headless-browser fallback returns zero products:
+periodically. If `data/deals.json` keeps showing entries in `errors`:
 
 1. Check the failing run's logs in the Actions tab for the actual error.
-2. If it's a selector problem (browser fallback ran but found 0 product
-   cards), open the retailer's search page in a real browser, inspect a
-   product tile with devtools, and add the new CSS selector to the matching
-   array in `config/selectors.json` — no code changes needed.
-3. If requests are being blocked outright (e.g. persistent CAPTCHA/403 from
-   both the HTTP and browser paths), that retailer may need a longer cooldown
-   between requests, or scraping may not be viable for a period — the
-   workflow will simply log the error and keep working for whichever
-   retailer/category still succeeds.
+2. If SerpApi itself is erroring for a Home Depot product, check the product
+   directly on homedepot.com — it may be out of stock or discontinued at
+   your store, which is not a bug to fix.
+3. If Lowe's requests are being blocked outright (persistent 403 from both
+   the HTTP and browser paths), that's expected occasionally — the workflow
+   just logs the error and keeps working for whichever product still
+   succeeds.
 
-This scraper is intentionally low-frequency (once/day) and only fetches
-public search-result pages for personal price tracking — please don't lower
-the interval to something aggressive.
+This tracker only checks a short, fixed list of specific products for
+personal price tracking — please don't turn it into broader
+category/keyword scraping or increase the schedule frequency.
 
 ## Local development
 

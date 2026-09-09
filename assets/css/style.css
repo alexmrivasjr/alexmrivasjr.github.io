@@ -139,11 +139,6 @@ button:hover { opacity: 0.9; }
   font-size: 0.85rem;
 }
 
-.thresholds {
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
 footer {
   color: var(--muted);
   font-size: 0.8rem;
