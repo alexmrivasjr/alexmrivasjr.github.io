@@ -4,17 +4,26 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "tiers = scrape prize-tier tables; winners-recon = dump structure of the winners-search page"
+        description: "tiers = scrape prize-tier tables; winners-recon = dump winners-search page structure; winners = scrape+filter recent winners"
         required: false
         default: "tiers"
         type: choice
         options:
           - tiers
           - winners-recon
+          - winners
       game_ids:
         description: "Space-separated game IDs to scrape (mode=tiers only)"
         required: false
         default: "1927 1971 1972 1988"
+      cities:
+        description: "Comma-separated cities to filter winners to (mode=winners only)"
+        required: false
+        default: "Kennewick,Pasco,Richland,West Richland,Burbank,Finley"
+      days:
+        description: "How many days back to filter winners to (mode=winners only)"
+        required: false
+        default: "30"
 
 permissions:
   contents: write
@@ -56,6 +65,13 @@ jobs:
       - name: Recon winners-search page structure
         if: ${{ github.event.inputs.mode == 'winners-recon' }}
         run: node scripts/lottery/recon-winners.js
+
+      - name: Scrape recent winners
+        if: ${{ github.event.inputs.mode == 'winners' }}
+        env:
+          WINNER_CITIES: ${{ github.event.inputs.cities }}
+          WINNER_DAYS: ${{ github.event.inputs.days }}
+        run: node scripts/lottery/scrape-winners.js --days "$WINNER_DAYS" --cities "$WINNER_CITIES"
 
       - name: Commit scraped data
         run: |
