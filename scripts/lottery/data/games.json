@@ -1,0 +1,244 @@
+[
+  {
+    "id": "1927",
+    "name": "$250,000 Loteria 7th Edition",
+    "ticketPrice": 10,
+    "overallOddsDenominator": 3.61,
+    "tiers": [
+      {
+        "value": 250000,
+        "totalPrinted": 3,
+        "remaining": 1
+      },
+      {
+        "value": 50000,
+        "totalPrinted": 29,
+        "remaining": 1
+      },
+      {
+        "value": 1000,
+        "totalPrinted": 29,
+        "remaining": 2
+      },
+      {
+        "value": 500,
+        "totalPrinted": 175,
+        "remaining": 16
+      },
+      {
+        "value": 200,
+        "totalPrinted": 545,
+        "remaining": 42
+      },
+      {
+        "value": 100,
+        "totalPrinted": 35858,
+        "remaining": 2727
+      },
+      {
+        "value": 50,
+        "totalPrinted": 43289,
+        "remaining": 3280
+      },
+      {
+        "value": 25,
+        "totalPrinted": 43103,
+        "remaining": 3505
+      },
+      {
+        "value": 20,
+        "totalPrinted": 171752,
+        "remaining": 13541
+      },
+      {
+        "value": 10,
+        "totalPrinted": 300371,
+        "remaining": 26056
+      }
+    ]
+  },
+  {
+    "id": "1971",
+    "name": "$250,000 Loteria 8th Edition",
+    "ticketPrice": 10,
+    "overallOddsDenominator": 3.61,
+    "tiers": [
+      {
+        "value": 250000,
+        "totalPrinted": 3,
+        "remaining": 1
+      },
+      {
+        "value": 50000,
+        "totalPrinted": 29,
+        "remaining": 9
+      },
+      {
+        "value": 1000,
+        "totalPrinted": 29,
+        "remaining": 9
+      },
+      {
+        "value": 500,
+        "totalPrinted": 179,
+        "remaining": 56
+      },
+      {
+        "value": 200,
+        "totalPrinted": 552,
+        "remaining": 180
+      },
+      {
+        "value": 100,
+        "totalPrinted": 36365,
+        "remaining": 11321
+      },
+      {
+        "value": 50,
+        "totalPrinted": 43871,
+        "remaining": 13665
+      },
+      {
+        "value": 25,
+        "totalPrinted": 43693,
+        "remaining": 13943
+      },
+      {
+        "value": 20,
+        "totalPrinted": 174076,
+        "remaining": 55209
+      },
+      {
+        "value": 10,
+        "totalPrinted": 304573,
+        "remaining": 98321
+      }
+    ]
+  },
+  {
+    "id": "1972",
+    "name": "Loteria 29th Edition",
+    "ticketPrice": 2,
+    "overallOddsDenominator": 3.63,
+    "tiers": [
+      {
+        "value": 20000,
+        "totalPrinted": 5,
+        "remaining": 2
+      },
+      {
+        "value": 200,
+        "totalPrinted": 361,
+        "remaining": 84
+      },
+      {
+        "value": 50,
+        "totalPrinted": 3083,
+        "remaining": 795
+      },
+      {
+        "value": 20,
+        "totalPrinted": 68372,
+        "remaining": 17644
+      },
+      {
+        "value": 15,
+        "totalPrinted": 54701,
+        "remaining": 13880
+      },
+      {
+        "value": 10,
+        "totalPrinted": 82078,
+        "remaining": 21892
+      },
+      {
+        "value": 5,
+        "totalPrinted": 287122,
+        "remaining": 80227
+      },
+      {
+        "value": 3,
+        "totalPrinted": 314553,
+        "remaining": 93875
+      },
+      {
+        "value": 2,
+        "totalPrinted": 697460,
+        "remaining": 212266
+      }
+    ]
+  },
+  {
+    "id": "1988",
+    "name": "Loteria Grande 13th Edition",
+    "ticketPrice": 5,
+    "overallOddsDenominator": 3.32,
+    "tiers": [
+      {
+        "value": 50000,
+        "totalPrinted": 4,
+        "remaining": 1
+      },
+      {
+        "value": 1000,
+        "totalPrinted": 6,
+        "remaining": 2
+      },
+      {
+        "value": 500,
+        "totalPrinted": 8,
+        "remaining": 1
+      },
+      {
+        "value": 250,
+        "totalPrinted": 168,
+        "remaining": 39
+      },
+      {
+        "value": 100,
+        "totalPrinted": 219,
+        "remaining": 51
+      },
+      {
+        "value": 75,
+        "totalPrinted": 325,
+        "remaining": 70
+      },
+      {
+        "value": 50,
+        "totalPrinted": 66704,
+        "remaining": 15053
+      },
+      {
+        "value": 40,
+        "totalPrinted": 20587,
+        "remaining": 4602
+      },
+      {
+        "value": 25,
+        "totalPrinted": 14318,
+        "remaining": 3423
+      },
+      {
+        "value": 20,
+        "totalPrinted": 32616,
+        "remaining": 7611
+      },
+      {
+        "value": 15,
+        "totalPrinted": 16316,
+        "remaining": 3978
+      },
+      {
+        "value": 10,
+        "totalPrinted": 228862,
+        "remaining": 56958
+      },
+      {
+        "value": 5,
+        "totalPrinted": 604362,
+        "remaining": 158063
+      }
+    ]
+  }
+]

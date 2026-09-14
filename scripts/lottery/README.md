@@ -5,6 +5,44 @@ expected value and computing the exact probability of coming out ahead when
 buying N tickets. Built for the "Loteria" family of games (#1927, #1971,
 #1972, #1988) but works for any game given its prize-tier table.
 
+## Results (real data, scraped 2026-09-14)
+
+The scraper turned out to work on the first real run (via a manually-triggered
+GitHub Actions job — see below), pulling actual tier tables for all four
+games from `Explorer.aspx?id=####`. Cross-checks against independently-known
+figures line up: #1927's and #1971's "total printed" on the $10 tier came
+back as exactly 300,371 and 304,573, and #1972/#1988's published overall odds
+(1 in 3.63 / 1 in 3.32) matched what turned up in search-engine snippets
+earlier. Raw tiers: `data/scraped-games.json`; combined with ticket
+price + overall odds: `data/games.json`. Run
+`node scripts/lottery/analyze.js scripts/lottery/data/games.json` to
+reproduce:
+
+| Game | Price | EV/ticket | EV % |
+|---|---|---|---|
+| #1927 $250,000 Loteria 7th Edition | $10 | $7.74 | 77.4% |
+| #1971 $250,000 Loteria 8th Edition | $10 | $7.22 | 72.2% |
+| #1988 Loteria Grande 13th Edition | $5 | $3.21 | 64.3% |
+| #1972 Loteria 29th Edition | $2 | $1.24 | 62.0% |
+
+**#1927 has the best EV.** Exact hypergeometric profit probability for
+buying N tickets of #1927:
+
+| N | Spend | P(profit) | P(break-even) | P(loss) |
+|---|---|---|---|---|
+| 1 | $10 | 13.0% | 14.7% | 72.3% |
+| 2 | $20 | 13.3% | 13.2% | 73.5% |
+| 3 | $30 | 14.3% | 5.2% | 80.5% |
+| 5 | $50 | 15.5% | 4.4% | 80.1% |
+| 10 | $100 | 17.3% | 2.2% | 80.5% |
+
+P(profit) rises slowly with N (more tickets = more chances to catch one of
+the larger remaining prizes) but stays well under 50% at every N tested —
+consistent with this being a below-100%-return game by design. `remaining
+tickets` is still the odds-ratio *estimate* described below, not a number WA
+Lottery publishes directly, so treat the EV and these probabilities as
+best-available estimates rather than exact figures.
+
 ## Important limitation hit while building this
 
 **This could not be run end-to-end or verified against live data in the
