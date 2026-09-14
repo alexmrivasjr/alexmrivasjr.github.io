@@ -1,0 +1,52 @@
+name: Scrape WA Lottery scratch-off data
+
+on:
+  workflow_dispatch:
+    inputs:
+      game_ids:
+        description: "Space-separated game IDs to scrape"
+        required: false
+        default: "1927 1971 1972 1988"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scrape-lottery
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install headless Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Scrape WA Lottery games
+        run: |
+          IDS=""
+          for id in ${{ github.event.inputs.game_ids }}; do IDS="$IDS --id $id"; done
+          node scripts/lottery/scrape.js $IDS --dump
+
+      - name: Run EV / profit-probability analysis
+        run: node scripts/lottery/analyze.js scripts/lottery/data/scraped-games.json || true
+
+      - name: Commit scraped data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add scripts/lottery/data/scraped-games.json scripts/lottery/data/debug-*.txt
+          git diff --cached --quiet || git commit -m "Update WA Lottery scraped data [skip ci]"
+          git push
