@@ -1,0 +1,271 @@
+url: https://walottery.com/winners/Search.aspx
+title: Washington's Lottery
+table count: 5952
+
+--- selects ---
+[
+  {
+    "id": "ddlGames",
+    "name": "ddlGames",
+    "options": [
+      {
+        "value": "0",
+        "text": "All Games"
+      },
+      {
+        "value": "44",
+        "text": "Powerball"
+      },
+      {
+        "value": "39",
+        "text": "Mega Millions"
+      },
+      {
+        "value": "37",
+        "text": "Lotto"
+      },
+      {
+        "value": "41",
+        "text": "Hit 5"
+      },
+      {
+        "value": "43",
+        "text": "Match 4"
+      },
+      {
+        "value": "40",
+        "text": "Scratch"
+      }
+    ]
+  }
+]
+
+--- inputs ---
+[
+  {
+    "id": "__VIEWSTATE",
+    "name": "__VIEWSTATE",
+    "type": "hidden",
+    "placeholder": ""
+  },
+  {
+    "id": "txtName",
+    "name": "txtName",
+    "type": "text",
+    "placeholder": ""
+  },
+  {
+    "id": "txtZipCode",
+    "name": "txtZipCode",
+    "type": "text",
+    "placeholder": ""
+  },
+  {
+    "id": "search-winners-submit-btn",
+    "name": "",
+    "type": "submit",
+    "placeholder": ""
+  },
+  {
+    "id": "__VIEWSTATEGENERATOR",
+    "name": "__VIEWSTATEGENERATOR",
+    "type": "hidden",
+    "placeholder": ""
+  }
+]
+
+--- buttons ---
+[
+  {
+    "id": "",
+    "text": "Translate"
+  },
+  {
+    "id": "search-winners-submit-btn",
+    "text": "Search"
+  }
+]
+
+--- body text snippet ---
+Translations of this website are provided by Google's Website Translator. Washington’s Lottery does not guarantee the accuracy or reliability of these translations and is not liable for any loss or damage arising out of the use of or reliance on the translated content.
+
+Translate
+Skip to main content
+ REWARDS PROGRAM
+ 
+WINNING NUMBERS
+LATEST JACKPOTS
+ 
+CHECK YOUR TICKET
+ 
+UNCLAIMED TOP PRIZES
+ 
+PAST DRAWINGS
+ 
+NUMBERS FREQUENCY
+JACKPOT GAMES
+ALL GAMES
+ 
+POWERBALL
+ 
+MEGA MILLIONS
+ 
+LOTTO
+ 
+HIT 5
+ 
+MATCH 4
+ 
+PICK 3
+ 
+CASH POP
+ 
+DAILY KENO
+SCRATCH
+SCRATCH EXPLORER
+ 
+TOP PRIZES REMAINING
+ 
+DISCLAIMERS
+ 
+PRIZE ODDS
+SPECIAL OFFERS
+CURRENT OFFERS
+ 
+PAST OFFERS
+WHO BENEFITS
+MEDIA
+WINNERS BY GAME
+Find Winners
+	
+All Games
+Powerball
+Mega Millions
+Lotto
+Hit 5
+Match 4
+Scratch
+DATE	GAME	JACKPOT	NAME	LOCATION
+September 11, 2026	
+
+$1,000,000 SIZZLING RICHES
+
+	$1,000	JESSICA B.	QUICK SHOP MINIT MART #9
+1910 W FOURTH PLAIN BLVD, VANCOUVER, WA
+September 11, 2026		$1,000	LINDSAY U.	TOWN CENTER MINI MART
+15410 MAIN ST NE, DUVALL, WA
+September 11, 2026		$1,000	CURTIS G.	SPANAWAY DELI
+16305 22ND AVE E, TACOMA, WA
+September 11, 2026	
+
+$1,000 FRENZY
+
+	$1,000	JILL B.	YOKE'S FRESH MARKET #11
+9329 E MONTGOMERY AVE, SPOKANE VALLEY, WA
+September 11, 2026		$10,000	ANTON A.	SALEH'S DELICATESSEN
+2401 NW 80TH ST, SEATTLE, WA
+September 11, 2026		$1,000	MATTHEW W.	TUMWATER CONVENIENCE
+533 CUSTER WAY SE, OLYMPIA, WA
+September 11, 2026		$10,000	RAMIS N.	FRED MEYER #013
+18325 AURORA AVE N, SHORELINE, WA
+September 11, 2026		$10,000	RYAN A.	BLACK EAGLES
+2102 BROADWAY, EVERETT, WA
+September 11, 2026	
+
+MONEY MAKER SLINGO TRIO 3RD ED
+
+	$1,000	RICKY N.	SAFEWAY #0228
+1330 N 20TH AVE, PASCO, WA
+September 11, 2026		$10,000	TERINA C.	STEINMAN'S ON 12TH
+1719 12TH ST, ANACORTES, WA
+September 11, 2026	
+
+$5,000 FRENZY
+
+	$5,000	CALVERT L.	V MARKET
+8417 NE BURTON RD, VANCOUVER, WA
+September 11, 2026		$1,000	FABRICIO S.	ROCKET #5477
+15615 NE 8TH ST, BELLEVUE, WA
+September 11, 2026	
+
+$2,500 FRENZY
+
+	$1,000	JAYCEE A.	LUCKY FOOD MART
+22 GOETHALS DR, RICHLAND, WA
+September 11, 2026		$10,000	STEPHANIE G.	LOT SEA-TAC INTERNATIONAL AIRPORT
+17801 INTERNATIONAL BLVD, SEATAC, WA
+September 11, 2026		$10,000	WILLIAM B.	SAFEWAY STORE #1571
+23961 NE STATE ROUTE 3, BELFAIR, WA
+September 11, 2026	
+
+CUBE CROSSWORD
+
+	$1,000	MIGUEL L.	I-5 SHELL
+107 HAMILTON RD N, CHEHALIS, WA
+September 11, 2026	
+
+$2,500 FRENZY
+
+	$2,500	AIDA R.	ROCKET #5477
+15615 NE 8TH ST, BELLEVUE, WA
+September 11, 2026		$1,000	MILINDA M.	FLYING B #3
+111 RIVERSIDE DR, OMAK, WA
+September 11, 2026		$50,000	NUONG T.	JACKSONS # 631
+13138 INTERURBAN AVE S, TUKWILA, WA
+September 11, 2026		$1,000	VINCENT D.	BI-MART #626
+1207 N 40TH AVE, YAKIMA, WA
+September 11, 2026		$1,000	ROBERT R.	FRED MEYER #682
+26520 MAPLE VALLEY-, MAPLE VALLEY, WA
+September 11, 2026	
+
+$2,500 FRENZY
+
+	$2,500	CHARLES L.	SAFEWAY STORE #1159
+121 W WALNUT ST, NEWPORT, WA
+September 11, 2026		$10,000	MICHAEL K.	SAFEWAY STORE #3006
+1451 HIGHLANDS DR NE, ISSAQUAH, WA
+September 11, 2026		$10,000	SRI F.	TWIN LAKES CHEVRON
+4612 SW 320TH ST, FEDERAL WAY, WA
+September 11, 2026	
+
+CUBE CROSSWORD
+
+	$1,000	MARK T.	BALLARD STOP
+2220 NW MARKET ST, SEATTLE, WA
+September 10, 2026		$1,000	CRYSTAL B.	ELMA MINI MALL
+1509 W MAIN ST, ELMA, WA
+September 10, 2026	
+
+$2,500 FRENZY
+
+	$2,500	AUTUMN R.	BRECKENRIDGE DAIRY LLC
+534 CHERRY ST, SUMAS, WA
+September 10, 2026	
+
+LUCKY FOR LIFE 19TH EDITION
+
+	$1,000	MEGHAN C.	HOME SHELL FOOD MART
+1315 KEY PENINSULA HWY N, LAKEBAY, WA
+September 10, 2026	
+
+LOTERIA SUPER GRANDE 5TH EDIT
+
+	$1,000	DAVID W.	PIK-A-POP #5
+110 S ELM AVE, PASCO, WA
+September 10, 2026		$1,000	SHAWN P.	SAFEWAY STORE #1687
+3307 EVERGREEN WAY STE 5, WASHOUGAL, WA
+September 10, 2026	
+
+$2,500 FRENZY
+
+	$2,500	AMY K.	SUNRISE FOOD MART
+620 N 28th AVE, PASCO, WA
+September 10, 2026	
+
+CUBE CROSSWORD
+
+	$1,000	MARK T.	BALLARD STOP
+2220 NW MARKET ST, SEATTLE, WA
+September 10, 2026		$10,000	CHERYLL D.	Conoco Food Mart
+7018 E SPRAGUE AVE, SPOKANE VALLEY, WA
+September 10, 2026		$1,000	JEREMY N.	BOW HILL 

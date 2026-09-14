@@ -1,0 +1,857 @@
+url: https://walottery.com/Winners/default.aspx
+title: Washington's Lottery
+table count: 1
+
+--- selects ---
+[]
+
+--- inputs ---
+[
+  {
+    "id": "__VIEWSTATE",
+    "name": "__VIEWSTATE",
+    "type": "hidden",
+    "placeholder": ""
+  },
+  {
+    "id": "__VIEWSTATEGENERATOR",
+    "name": "__VIEWSTATEGENERATOR",
+    "type": "hidden",
+    "placeholder": ""
+  }
+]
+
+--- buttons ---
+[
+  {
+    "id": "",
+    "text": "Translate"
+  },
+  {
+    "id": "",
+    "text": ""
+  },
+  {
+    "id": "",
+    "text": ""
+  },
+  {
+    "id": "",
+    "text": "Keyboard shortcuts"
+  },
+  {
+    "id": "",
+    "text": "Map Data"
+  },
+  {
+    "id": "",
+    "text": "20 km Click to toggle between metric and imperial units"
+  }
+]
+
+--- body text snippet ---
+Translations of this website are provided by Google's Website Translator. Washington’s Lottery does not guarantee the accuracy or reliability of these translations and is not liable for any loss or damage arising out of the use of or reliance on the translated content.
+
+Translate
+Skip to main content
+ REWARDS PROGRAM
+ 
+WINNING NUMBERS
+LATEST JACKPOTS
+ 
+CHECK YOUR TICKET
+ 
+UNCLAIMED TOP PRIZES
+ 
+PAST DRAWINGS
+ 
+NUMBERS FREQUENCY
+JACKPOT GAMES
+ALL GAMES
+ 
+POWERBALL
+ 
+MEGA MILLIONS
+ 
+LOTTO
+ 
+HIT 5
+ 
+MATCH 4
+ 
+PICK 3
+ 
+CASH POP
+ 
+DAILY KENO
+SCRATCH
+SCRATCH EXPLORER
+ 
+TOP PRIZES REMAINING
+ 
+DISCLAIMERS
+ 
+PRIZE ODDS
+SPECIAL OFFERS
+CURRENT OFFERS
+ 
+PAST OFFERS
+WHO BENEFITS
+MEDIA
+
+Total Winnings to Date*
+
+$551,597,219
+
+	
+
+THEY CAME. THEY PLAYED.
+
+THEY WON!
+
+	
+
+Total Winners to Date*
+
+34,330,742
+
+*Total number in the last 365 days
+
+		
+
+WINNINGS
+BY GAME
+
+Total number of winners and winnings in the last 365 days
+
+WINNERS BY GAME
+	
+
+1,799,803
+
+Winners
+
+$13,187,746
+
+Winnings
+
+655,778
+
+Winners
+
+$4,447,610
+
+Winnings
+
+1,865,358
+
+Winners
+
+$29,364,889
+
+Winnings
+
+4,864,361
+
+Winners
+
+$31,264,725
+
+Winnings
+
+927,593
+
+Winners
+
+$10,433,308
+
+Winnings
+
+WINNING HOTSPOTS
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+$
+Keyboard shortcuts
+Map data ©2026 Google
+Terms
+Report a map error
+
+We use cookies to ensure that we give you the best experience on our website. If you continue to use this site, you acknowledge that you accept and understand our  Privacy Policy.
+
+ACCEPT
+About
+Contact
+Responsible Gambling
+Employment
+Rule Making
+Site Search
+For Retailers
+Claim Your Prize
+Where To Play
+FAQ
+Winners
+Press Room
+Related Links
+Privacy Notice
+Voluntary Self-Exclusion
+
+© 2026 Washington's Lottery
