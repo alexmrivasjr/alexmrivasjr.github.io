@@ -1,0 +1,135 @@
+{
+  "generatedAt": "2026-09-14T01:04:25.099Z",
+  "days": 30,
+  "cutoffDate": "2026-08-15",
+  "cities": [
+    "KENNEWICK",
+    "PASCO",
+    "RICHLAND",
+    "WEST RICHLAND",
+    "BURBANK",
+    "FINLEY"
+  ],
+  "results": [
+    {
+      "date": "2026-09-11",
+      "game": "MONEY MAKER SLINGO TRIO 3RD ED",
+      "prize": 1000,
+      "name": "RICKY N.",
+      "storeName": "SAFEWAY #0228",
+      "address": "1330 N 20TH AVE, PASCO, WA",
+      "city": "PASCO",
+      "state": "WA"
+    },
+    {
+      "date": "2026-09-11",
+      "game": "$2,500 FRENZY",
+      "prize": 1000,
+      "name": "JAYCEE A.",
+      "storeName": "LUCKY FOOD MART",
+      "address": "22 GOETHALS DR, RICHLAND, WA",
+      "city": "RICHLAND",
+      "state": "WA"
+    },
+    {
+      "date": "2026-09-10",
+      "game": "LOTERIA SUPER GRANDE 5TH EDIT",
+      "prize": 1000,
+      "name": "DAVID W.",
+      "storeName": "PIK-A-POP #5",
+      "address": "110 S ELM AVE, PASCO, WA",
+      "city": "PASCO",
+      "state": "WA"
+    },
+    {
+      "date": "2026-09-10",
+      "game": "$2,500 FRENZY",
+      "prize": 2500,
+      "name": "AMY K.",
+      "storeName": "SUNRISE FOOD MART",
+      "address": "620 N 28th AVE, PASCO, WA",
+      "city": "PASCO",
+      "state": "WA"
+    },
+    {
+      "date": "2026-09-09",
+      "game": "CUBE CROSSWORD",
+      "prize": 1000,
+      "name": "DOUGLAS A.",
+      "storeName": "ONE STOP MART #11",
+      "address": "1903 JADWIN AVE, RICHLAND, WA",
+      "city": "RICHLAND",
+      "state": "WA"
+    },
+    {
+      "date": "2026-09-08",
+      "game": "$250,000 LOTERIA 8TH EDITION",
+      "prize": 1000,
+      "name": "HAPPY P.",
+      "storeName": "WINCO FOODS #2",
+      "address": "4602 W CLEARWATER AVE, KENNEWICK, WA",
+      "city": "KENNEWICK",
+      "state": "WA"
+    },
+    {
+      "date": "2026-09-03",
+      "game": "WASHINGTON MILLIONAIRE",
+      "prize": 1000,
+      "name": "OZIEL L.",
+      "storeName": "CIRCLE K #6028",
+      "address": "3109 W COURT ST, PASCO, WA",
+      "city": "PASCO",
+      "state": "WA"
+    },
+    {
+      "date": "2026-08-31",
+      "game": "MONSTER MONEY",
+      "prize": 2000,
+      "name": "BRADLEY S.",
+      "storeName": "CIRCLE K #6036",
+      "address": "4410 W 10TH AVE, KENNEWICK, WA",
+      "city": "KENNEWICK",
+      "state": "WA"
+    },
+    {
+      "date": "2026-08-24",
+      "game": "RED HOT MONEY",
+      "prize": 10000,
+      "name": "AVERY S.",
+      "storeName": "7-ELEVEN 2362-25412E",
+      "address": "2411 GEORGE WASHINGTON WAY, RICHLAND, WA",
+      "city": "RICHLAND",
+      "state": "WA"
+    },
+    {
+      "date": "2026-08-21",
+      "game": "LUCKY 7 BONUS",
+      "prize": 2000,
+      "name": "JOHN F.",
+      "storeName": "KAHLOTUS KORNERS",
+      "address": "120 PASCO KAHLOTUS RD, PASCO, WA",
+      "city": "PASCO",
+      "state": "WA"
+    },
+    {
+      "date": "2026-08-20",
+      "game": "LOTERIA SUPER GRANDE 5TH EDIT",
+      "prize": 1000,
+      "name": "ROBERT F.",
+      "storeName": "FRIENDS CORNER",
+      "address": "773 KOHLER RD, BURBANK, WA",
+      "city": "BURBANK",
+      "state": "WA"
+    },
+    {
+      "date": "2026-08-17",
+      "game": "$2,500 FRENZY",
+      "prize": 2500,
+      "name": "AGUSTIN R.",
+      "storeName": "SAFEWAY #0228",
+      "address": "1330 N 20TH AVE, PASCO, WA",
+      "city": "PASCO",
+      "state": "WA"
+    }
+  ]
+}
