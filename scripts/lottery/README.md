@@ -43,6 +43,49 @@ tickets` is still the odds-ratio *estimate* described below, not a number WA
 Lottery publishes directly, so treat the EV and these probabilities as
 best-available estimates rather than exact figures.
 
+## Recent winners by location (`scrape-winners.js`)
+
+Separate from the scratch-tier EV tool above: `walottery.com/winners/Search.aspx`
+publishes a live DATE/GAME/JACKPOT/NAME/LOCATION feed of winners (no
+date-range or city filter in the UI, just game/name/zip) that already goes
+back roughly a year via infinite scroll. `scrape-winners.js` scrolls to load
+the full feed, parses the table (handling the rowspan-style GAME column,
+which only appears on the row where it changes), and filters to a city list
++ day window.
+
+**Important caveat**: this feed only publicizes prizes of $600+ (the lowest
+value seen across ~5,950 scraped records) — the federal W-2G reporting
+threshold. It is not a record of every winning ticket cashed in a city; small
+scratch/Daily-Keno-type wins aren't individually listed here (there'd be far
+too many).
+
+Results for Tri-Cities WA (Kennewick, Pasco, Richland, West Richland,
+Burbank, Finley), last 30 days as of 2026-09-14 —
+`data/winners-filtered.json`:
+
+**12 winners, $26,000 total published prize value.**
+
+| Date | Prize | Game | City | Store |
+|---|---|---|---|---|
+| 2026-09-11 | $1,000 | Money Maker Slingo Trio 3rd Ed | Pasco | Safeway #0228 |
+| 2026-09-11 | $1,000 | $2,500 Frenzy | Richland | Lucky Food Mart |
+| 2026-09-10 | $1,000 | Loteria Super Grande 5th Edit | Pasco | Pik-A-Pop #5 |
+| 2026-09-10 | $2,500 | $2,500 Frenzy | Pasco | Sunrise Food Mart |
+| 2026-09-09 | $1,000 | Cube Crossword | Richland | One Stop Mart #11 |
+| 2026-09-08 | $1,000 | $250,000 Loteria 8th Edition | Kennewick | Winco Foods #2 |
+| 2026-09-03 | $1,000 | Washington Millionaire | Pasco | Circle K #6028 |
+| 2026-08-31 | $2,000 | Monster Money | Kennewick | Circle K #6036 |
+| 2026-08-24 | $10,000 | Red Hot Money | Richland | 7-Eleven 2362-25412E |
+| 2026-08-21 | $2,000 | Lucky 7 Bonus | Pasco | Kahlotus Korners |
+| 2026-08-20 | $1,000 | Loteria Super Grande 5th Edit | Burbank | Friends Corner |
+| 2026-08-17 | $2,500 | $2,500 Frenzy | Pasco | Safeway #0228 |
+
+By city: Pasco 6, Richland 3, Kennewick 2, Burbank 1, West Richland/Finley 0.
+Reproduce with:
+```
+node scripts/lottery/scrape-winners.js --days 30 --cities "Kennewick,Pasco,Richland,West Richland,Burbank,Finley"
+```
+
 ## Important limitation hit while building this
 
 **This could not be run end-to-end or verified against live data in the
