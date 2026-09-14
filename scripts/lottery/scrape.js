@@ -12,12 +12,12 @@
  * WebForms pages typically render (GridView tables, jQuery-UI tabs), not
  * confirmed against the actual rendered HTML. Run with --dump on a machine
  * that *can* reach walottery.com first; if the generic table-row heuristic
- * below doesn't find rows, the dumped HTML/screenshot will show what
- * selectors actually need adjusting.
+ * below doesn't find rows, the dumped debug text (table/row counts + a body
+ * text snippet) will show what selectors actually need adjusting.
  *
  * Usage:
  *   node scripts/lottery/scrape.js --id 1927 --id 1971 --id 1972 --id 1988
- *   node scripts/lottery/scrape.js --id 1972 --dump   # also saves raw HTML + screenshot for debugging
+ *   node scripts/lottery/scrape.js --id 1972 --dump   # also writes a debug-1972.txt with page diagnostics
  */
 import { chromium } from "playwright";
 import { writeFile, mkdir } from "node:fs/promises";
@@ -98,17 +98,28 @@ async function scrapeGame(browser, id, { dump }) {
     // Give any AJAX-populated grid a moment beyond networkidle.
     await page.waitForTimeout(2000);
 
-    if (dump) {
-      await mkdir(OUT_DIR, { recursive: true });
-      await writeFile(path.join(OUT_DIR, `raw-${id}.html`), await page.content());
-      await page.screenshot({ path: path.join(OUT_DIR, `raw-${id}.png`), fullPage: true });
-      console.log(`[${id}] dumped raw HTML + screenshot to scripts/lottery/data/`);
-    }
-
     const rows = await extractTierRows(page);
     const tiers = rowsToTiers(rows);
     if (!tiers.length) {
       console.warn(`[${id}] no tier rows matched the generic heuristic -- rerun with --dump and adjust extractTierRows()`);
+    }
+
+    if (dump) {
+      await mkdir(OUT_DIR, { recursive: true });
+      const diag = await page.evaluate(() => ({
+        tableCount: document.querySelectorAll("table").length,
+        trCount: document.querySelectorAll("tr").length,
+        bodyTextSnippet: document.body.innerText.slice(0, 6000),
+      }));
+      const debugText =
+        `url: ${url}\n` +
+        `title: ${await page.title()}\n` +
+        `table count: ${diag.tableCount}\n` +
+        `tr count: ${diag.trCount}\n` +
+        `matched tier rows: ${rows.length}\n` +
+        `--- first 6000 chars of document.body.innerText ---\n${diag.bodyTextSnippet}\n`;
+      await writeFile(path.join(OUT_DIR, `debug-${id}.txt`), debugText);
+      console.log(`[${id}] wrote scripts/lottery/data/debug-${id}.txt (table count: ${diag.tableCount}, matched rows: ${rows.length})`);
     }
 
     const nameMatch = await page.title();

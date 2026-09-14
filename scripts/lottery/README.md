@@ -42,12 +42,13 @@ node scripts/lottery/scrape.js --id 1927 --id 1971 --id 1972 --id 1988 --dump
 `scrape.js` targets each game's `Explorer.aspx?id=####` page and pulls prize
 tiers with a generic heuristic (any table row starting with a `$amount`
 followed by two integer columns). Since this was written blind (no access to
-the real rendered DOM), **run with `--dump` first** — it saves the rendered
-HTML and a full-page screenshot to `scripts/lottery/data/raw-<id>.{html,png}`
-so you can see the actual table structure and fix `extractTierRows()` in
-`scrape.js` if the heuristic doesn't match it (e.g. if the site uses the
-price-tier tabs on `TopPrizesRemaining.aspx` instead of/in addition to the
-per-game Explorer page).
+the real rendered DOM), **run with `--dump` first** — it writes
+`scripts/lottery/data/debug-<id>.txt` with the page title, `<table>`/`<tr>`
+counts, how many rows the heuristic matched, and the first 6000 characters of
+the rendered page's visible text, so you can see the actual table structure
+and fix `extractTierRows()` in `scrape.js` if the heuristic doesn't match it
+(e.g. if the site uses the price-tier tabs on `TopPrizesRemaining.aspx`
+instead of/in addition to the per-game Explorer page).
 
 Search-engine snippets (not full page fetches, so not usable as scrape input)
 turned up scattered numbers for #1972 and #1988 that **directly illustrate
