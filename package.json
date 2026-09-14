@@ -7,7 +7,9 @@
   "scripts": {
     "scrape": "node scripts/scrape.js",
     "send-push": "node scripts/send-push.js",
-    "generate-vapid-keys": "node scripts/generate-vapid-keys.js"
+    "generate-vapid-keys": "node scripts/generate-vapid-keys.js",
+    "lottery:scrape": "node scripts/lottery/scrape.js",
+    "lottery:analyze": "node scripts/lottery/analyze.js"
   },
   "dependencies": {
     "cheerio": "^1.0.0",
