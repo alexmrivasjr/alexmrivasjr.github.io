@@ -7,6 +7,7 @@
   "scripts": {
     "scrape": "node scripts/scrape.js",
     "send-push": "node scripts/send-push.js",
+    "send-lead-push": "node scripts/send-lead-push.js",
     "generate-vapid-keys": "node scripts/generate-vapid-keys.js"
   },
   "dependencies": {

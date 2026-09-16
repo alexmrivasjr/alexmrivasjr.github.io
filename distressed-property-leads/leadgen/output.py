@@ -6,6 +6,7 @@ every run report, every time, and cannot be suppressed by a CLI flag.
 from __future__ import annotations
 
 import csv
+from html import escape
 from pathlib import Path
 from typing import List
 
@@ -117,3 +118,174 @@ def write_run_report(
         "",
     ]
     path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def _lead_row_html(lead: Lead) -> str:
+    return f"""<tr>
+  <td>{escape(lead.source_category)}</td>
+  <td>{escape(lead.amount or "—")}</td>
+  <td>{escape(lead.filing_or_delinquency_date or "—")}</td>
+  <td>{f'<a href="{escape(lead.record_url)}">record</a>' if lead.record_url else "—"}</td>
+</tr>"""
+
+
+def _high_signal_card_html(group: List[Lead]) -> str:
+    display_address = group[0].address
+    owners = sorted({l.owner_name for l in group if l.owner_name})
+    matched = group[0].matched_sources
+    badges = "".join(f'<span class="badge">{escape(s)}</span>' for s in matched)
+    rows = "\n".join(_lead_row_html(l) for l in group)
+    return f"""<div class="card high-signal">
+  <h3>{escape(display_address)}</h3>
+  <p class="owners">{escape(", ".join(owners)) or "Owner name not captured"}</p>
+  <div class="badges">{badges}</div>
+  <table>
+    <thead><tr><th>Source</th><th>Amount</th><th>Date</th><th>Record</th></tr></thead>
+    <tbody>{rows}</tbody>
+  </table>
+</div>"""
+
+
+def _other_lead_row_html(lead: Lead) -> str:
+    link = f'<a href="{escape(lead.record_url)}">record</a>' if lead.record_url else "—"
+    return f"""<tr>
+  <td>{escape(lead.address)}</td>
+  <td>{escape(lead.owner_name or "—")}</td>
+  <td>{escape(lead.source_category)}</td>
+  <td>{escape(lead.amount or "—")}</td>
+  <td>{escape(lead.filing_or_delinquency_date or "—")}</td>
+  <td>{link}</td>
+</tr>"""
+
+
+def _manual_followup_row_html(item: ManualFollowUp) -> str:
+    link = f'<a href="{escape(item.portal_url)}">portal</a>' if item.portal_url else "—"
+    related = escape(item.related_address or "—")
+    return f"""<tr>
+  <td>{escape(item.category)}</td>
+  <td>{related}</td>
+  <td>{escape(item.reason)}</td>
+  <td>{escape(item.instructions)}</td>
+  <td>{link}</td>
+</tr>"""
+
+
+_HTML_STYLE = """\
+:root { color-scheme: light dark; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  max-width: 760px; margin: 0 auto; padding: 16px;
+  background: #ffffff; color: #1a1a1a; line-height: 1.45;
+}
+@media (prefers-color-scheme: dark) {
+  body { background: #121212; color: #eaeaea; }
+  .card, table { background: #1c1c1c !important; }
+  th { background: #262626 !important; }
+  a { color: #7cb7ff !important; }
+  .caveats { background: #332900 !important; border-color: #6b5900 !important; }
+}
+h1 { font-size: 1.3rem; }
+h2 { font-size: 1.1rem; margin-top: 2rem; }
+h3 { font-size: 1rem; margin: 0 0 4px; }
+.meta { color: #666; font-size: 0.85rem; }
+.caveats {
+  background: #fff8e1; border: 1px solid #e0c46b; border-radius: 8px;
+  padding: 12px 16px; font-size: 0.85rem; margin: 16px 0;
+}
+.caveats ol { margin: 4px 0 0; padding-left: 1.2rem; }
+.card {
+  background: #f7f7f7; border-radius: 8px; padding: 12px 16px; margin-bottom: 12px;
+}
+.card.high-signal { border-left: 4px solid #d9822b; }
+.owners { margin: 2px 0 8px; font-size: 0.9rem; color: #555; }
+.badges { margin-bottom: 8px; }
+.badge {
+  display: inline-block; font-size: 0.75rem; background: #d9822b; color: #fff;
+  border-radius: 999px; padding: 2px 10px; margin-right: 4px;
+}
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: #fff; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #ddd; }
+th { background: #f0f0f0; }
+.empty { color: #777; font-style: italic; }
+"""
+
+
+def write_html_report(
+    *,
+    county: str,
+    state: str,
+    pulled_at: str,
+    leads: List[Lead],
+    manual_followups: List[ManualFollowUp],
+    path: str | Path,
+) -> None:
+    """A phone-friendly HTML page meant to be pushed/linked to, not just
+    stored locally -- this is what a push notification's "tap to view" opens.
+    """
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    high_signal_groups: dict[str, List[Lead]] = {}
+    other_leads: List[Lead] = []
+    for lead in leads:
+        if lead.high_signal and lead.normalized_address:
+            high_signal_groups.setdefault(lead.normalized_address, []).append(lead)
+        else:
+            other_leads.append(lead)
+
+    high_signal_html = (
+        "\n".join(_high_signal_card_html(grp) for grp in high_signal_groups.values())
+        if high_signal_groups
+        else '<p class="empty">None this run.</p>'
+    )
+    other_leads_html = (
+        f"""<table>
+  <thead><tr><th>Address</th><th>Owner</th><th>Source</th><th>Amount</th><th>Date</th><th>Record</th></tr></thead>
+  <tbody>{"".join(_other_lead_row_html(l) for l in other_leads)}</tbody>
+</table>"""
+        if other_leads
+        else '<p class="empty">None this run.</p>'
+    )
+    manual_html = (
+        f"""<table>
+  <thead><tr><th>Category</th><th>Related to</th><th>Reason</th><th>What to do</th><th>Portal</th></tr></thead>
+  <tbody>{"".join(_manual_followup_row_html(m) for m in manual_followups)}</tbody>
+</table>"""
+        if manual_followups
+        else '<p class="empty">None this run.</p>'
+    )
+
+    html = f"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leads report -- {escape(county)}, {escape(state)}</title>
+<style>{_HTML_STYLE}</style>
+</head>
+<body>
+<h1>Distressed-property leads -- {escape(county)}, {escape(state)}</h1>
+<p class="meta">Pulled at {escape(pulled_at)} (UTC)</p>
+
+<div class="caveats">
+  <strong>Read before contacting anyone about these leads:</strong>
+  <ol>
+    <li>Lead generation only -- not verified ownership or a clean title. Do a manual title search before any offer.</li>
+    <li>County data can lag real-world status by 10-30 days in smaller counties.</li>
+    <li>Sources with no scrapable public list aren't in this report at all until you do the manual lookup below.</li>
+  </ol>
+</div>
+
+<h2>High-signal leads ({len(high_signal_groups)})</h2>
+{high_signal_html}
+
+<h2>Other leads ({len(other_leads)})</h2>
+{other_leads_html}
+
+<h2>Manual follow-up needed ({len(manual_followups)})</h2>
+{manual_html}
+
+</body>
+</html>
+"""
+    path.write_text(html, encoding="utf-8")

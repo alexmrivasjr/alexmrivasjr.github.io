@@ -65,6 +65,46 @@ tax-delinquent. It also does a weaker, secondary pass on fuzzy-matched
 owner names across categories at different addresses (e.g. an absentee
 owner with one property tax-delinquent and a separate probate filing).
 
+## Phone push notifications for new high-signal leads
+
+This reuses the same Web Push setup already documented in the repo root
+README (VAPID keys + a `PUSH_SUBSCRIPTION` secret from subscribing on
+`https://alexmrivasjr.github.io/`) -- if you've already got that working
+for the soil-deal tracker, no new setup is needed.
+
+- `.github/workflows/scrape-leads.yml` runs weekly (Mondays) and on-demand
+  (Actions tab -> "Pull distressed-property leads" -> Run workflow, with
+  an optional `county` input, default `benton_wa`).
+- Each run writes `reports/<county>.html` -- a small, phone-friendly,
+  self-contained HTML page (high-signal leads first, then other leads,
+  then manual follow-ups, with the same caveats as always) and commits it
+  back to the repo, where GitHub Pages serves it at
+  `https://alexmrivasjr.github.io/distressed-property-leads/reports/<county>.html`.
+- `data/notified/<county>.json` tracks which high-signal lead groups
+  (address + matched sources) have already been notified about, so a
+  **push notification only fires for genuinely new high-signal leads** --
+  not every run, and not for single-source leads. Tapping the notification
+  opens that county's HTML report.
+- A lead that stops being high-signal (e.g. a source's data changed) is
+  dropped from the notified-state file, so it can re-alert if it becomes
+  high-signal again later -- same behavior as the soil tracker's
+  `data/notified.json`.
+
+To run this locally instead of waiting for the schedule:
+
+```
+python -m leadgen.cli --county benton_wa --out ./out \
+  --html-report reports/benton_wa.html \
+  --notified-state data/notified/benton_wa.json \
+  --new-leads-json data/new-leads.json
+npm run send-lead-push   # needs VAPID_*/PUSH_SUBSCRIPTION env vars set
+```
+
+As shipped, Benton County has no automatable bulk list yet (see below), so
+`data/new-leads.json` will be `[]` and no push will fire until that
+changes or you point it at a county that does have a real downloadable
+list.
+
 ## Adding a new county
 
 1. Copy `counties/_template.yaml` to `counties/<key>.yaml` (e.g.
@@ -114,8 +154,9 @@ python -m pytest tests/ -q
 ```
 
 Tests cover address/owner normalization, cross-source high-signal
-flagging, the CSV/column-remapping logic, and the robots.txt fail-closed
-behavior -- all offline, no network calls.
+flagging, the CSV/column-remapping logic, the robots.txt fail-closed
+behavior, and the notified-state dedup logic -- all offline, no network
+calls.
 
 ## Legal/ethical notes
 

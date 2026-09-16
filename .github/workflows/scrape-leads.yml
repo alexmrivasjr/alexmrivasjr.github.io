@@ -1,0 +1,75 @@
+name: Pull distressed-property leads
+
+on:
+  schedule:
+    - cron: "0 14 * * 1" # ~6am Pacific / 9am Eastern, Monday
+  workflow_dispatch:
+    inputs:
+      county:
+        description: "County config key (see distressed-property-leads/counties/)"
+        required: false
+        default: "benton_wa"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scrape-leads
+  cancel-in-progress: false
+
+jobs:
+  pull-leads:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: pip install -r distressed-property-leads/requirements.txt
+
+      - name: Set county
+        id: county
+        run: echo "key=${{ github.event.inputs.county || 'benton_wa' }}" >> "$GITHUB_OUTPUT"
+
+      - name: Run lead pipeline
+        working-directory: distressed-property-leads
+        run: |
+          mkdir -p data/notified
+          python -m leadgen.cli \
+            --county "${{ steps.county.outputs.key }}" \
+            --out out \
+            --html-report "reports/${{ steps.county.outputs.key }}.html" \
+            --notified-state "data/notified/${{ steps.county.outputs.key }}.json" \
+            --new-leads-json "data/new-leads.json"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Send push notification for new high-signal leads
+        env:
+          VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          VAPID_SUBJECT: ${{ secrets.VAPID_SUBJECT }}
+          PUSH_SUBSCRIPTION: ${{ secrets.PUSH_SUBSCRIPTION }}
+          NEW_LEADS_JSON: distressed-property-leads/data/new-leads.json
+          LEADS_REPORT_URL: https://alexmrivasjr.github.io/distressed-property-leads/reports/${{ steps.county.outputs.key }}.html
+        run: npm run send-lead-push
+
+      - name: Commit updated reports and notified state
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add distressed-property-leads/reports distressed-property-leads/data
+          git diff --cached --quiet || git commit -m "Update ${{ steps.county.outputs.key }} leads report [skip ci]"
+          git push
