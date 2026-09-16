@@ -1,0 +1,134 @@
+# Franklin County, Washington (Pasco, Connell, Mesa, Kahlotus -- 99301 etc.)
+#
+# Researched 2026-09; re-verify portal_url / list_url before relying on this
+# for real leads -- county sites change layout/URLs over time. As with
+# benton_wa.yaml, nothing here claims automatable: true unless a direct,
+# non-search-form file URL was actually confirmed reachable and its
+# robots.txt checked; this environment's network access couldn't fetch the
+# Treasurer's page directly to grab that URL, so tax_delinquent is left
+# manual even though it looks more promising than Benton's (see below).
+
+county: "Franklin County"
+state: "WA"
+fips: "53021"
+
+sources:
+  # 1. Treasurer -- delinquent tax roll / tax foreclosure
+  tax_delinquent:
+    automatable: false
+    portal_url: "https://www.franklincountywa.gov/411/Tax-Foreclosure-Sales"
+    reason: >
+      Unlike Benton County, Franklin County's Treasurer does file an actual
+      document listing every parcel in foreclosure -- e.g. the "2025
+      Judgment Foreclosing Tax Liens and Order of Sale" (Superior Court
+      case 25-2-50612-11) -- linked from the Tax Foreclosure Sales page's
+      documents/auctions tab. That's a real candidate for automatable: true,
+      but this config couldn't confirm the direct file URL or check its
+      robots.txt from this environment. Before flipping automatable to
+      true: open the page yourself, find the current year's "Judgment
+      Foreclosing Tax Liens and Order of Sale" PDF link, confirm
+      franklincountywa.gov/robots.txt doesn't disallow it, then set
+      list_url and list_format: pdf here.
+    manual_instructions: >
+      Visit franklincountywa.gov/411/Tax-Foreclosure-Sales and open the
+      current year's "Judgment Foreclosing Tax Liens and Order of Sale"
+      under the documents/auctions tab -- it lists every parcel currently
+      in foreclosure (parcel, owner, amount). For a live per-parcel
+      balance, use the county's Property Tax Inquiry tool instead of a
+      bulk list.
+
+  # 2. Auditor -- recorded liens, deeds, judgments, notices of default/trustee sale
+  recorder:
+    automatable: false
+    portal_url: "https://www.franklincountywa.gov/370/Recording-Records-Search"
+    reason: >
+      Interactive search by grantor/grantee name, instrument number,
+      document type, recording date, or legal description -- documents
+      recorded since Jan 1, 1973 are online; older records need an
+      in-person/records request. No bulk export or public API.
+    doc_types_of_interest:
+      - "Notice of Trustee Sale"
+      - "Notice of Default"
+      - "Lis Pendens"
+      - "Mechanic's Lien"
+      - "Judgment"
+      - "Deed of Trust"
+      - "Tax Lien"
+    manual_instructions: >
+      Search the Recording & Records Search tool by grantor/grantee name
+      (owner) and separately by instrument/parcel, filtering document type
+      to the list above. Auditor's office: 1016 N 4th Avenue, Pasco, WA
+      99301, (509) 545-3502 ext 0.
+
+  # 3. Code Enforcement
+  code_enforcement:
+    automatable: false
+    portal_url: "https://www.franklincountywa.gov/276/Code-Enforcement-Program"
+    reason: >
+      No published public violation list; complaints require a written
+      "Report a Concern" form (verbal complaints aren't accepted), then a
+      Code Enforcement Officer investigates.
+    contact:
+      phone: "(509) 545-3521"
+      department: "Franklin County Planning and Economic Development, Code Enforcement, 502 W Boeing St, Pasco, WA 99301"
+    manual_instructions: >
+      Submit a written "Report a Concern" form for any address of interest
+      (franklincountywa.gov/569/Report-a-Concern); ask whether there are
+      open violations and whether a civil penalty or lien has been
+      recorded (cross-check the recorder source above for any resulting
+      lien).
+    also_check_cities:
+      - name: "Pasco"
+        note: >
+          Runs its own Code Division for in-city addresses, separate from
+          the county -- report at pasco-wa.gov/1433/Code-Division or call
+          (509) 543-5743.
+      - name: "Connell"
+        note: "Runs its own code enforcement for in-city addresses; contact the City of Connell directly."
+      - name: "Mesa"
+        note: "Runs its own code enforcement for in-city addresses; contact the Town of Mesa directly."
+      - name: "Kahlotus"
+        note: "Runs its own code enforcement for in-city addresses; contact the Town of Kahlotus directly."
+
+  # 4. Court Records -- probate, divorce, foreclosure lawsuits
+  court_records:
+    automatable: false
+    portal_url: "https://dw.courts.wa.gov/index.cfm?fa=home.casesearch"
+    reason: >
+      Washington's statewide case-search portal gives docket entries, case
+      type, and hearing dates for free, but viewing actual documents
+      requires registering for the Enhanced Odyssey Portal through the
+      Franklin County Clerk (a portal master registration form plus a
+      signed confidentiality agreement) -- no public bulk case-list export.
+    case_types_of_interest:
+      - "Probate"
+      - "Dissolution (Divorce)"
+      - "Judicial Foreclosure"
+      - "Unlawful Detainer"
+    manual_instructions: >
+      Quick single-name/case-number checks: dw.courts.wa.gov case search,
+      filtered to Franklin County Superior/District Court. For systematic
+      access by case type/date range, register for the Enhanced Odyssey
+      Portal via the Franklin County Clerk (1016 N 4th Avenue B306, Pasco,
+      WA 99301, (509) 545-3525) and filter to the case types above.
+
+  # 5. Foreclosure sales (auction stage)
+  foreclosure_sales:
+    automatable: false
+    portal_url: "https://www.franklincountywa.gov/411/Tax-Foreclosure-Sales"
+    reason: >
+      Two separate auction paths here. (a) Franklin County's own annual
+      tax-foreclosure sale (properties 3+ years delinquent) is run
+      through the third-party GovEase online auction platform, once a
+      year (the 2025 sale was Dec 12, 2025) -- check GovEase's Franklin
+      County WA auction page for the current listing, subject to
+      GovEase's own terms. (b) Private deed-of-trust foreclosures (the
+      much more common case) follow Washington's non-judicial process:
+      the Notice of Trustee's Sale is recorded with the County Auditor
+      (see the recorder source) and published by the trustee in a local
+      legal newspaper -- there's no single county-run list of those.
+    manual_instructions: >
+      For tax-foreclosure auctions, check GovEase's Franklin County, WA
+      listing page for the current sale. For private
+      (deed-of-trust) foreclosures, use the recorder source's
+      document-type filter for "Notice of Trustee Sale".

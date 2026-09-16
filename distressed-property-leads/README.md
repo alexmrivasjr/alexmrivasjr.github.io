@@ -3,8 +3,9 @@
 A local tool that pulls, normalizes, and cross-references public-record
 leads on distressed / motivated-seller real estate for a county, so you can
 review a short, high-signal list instead of browsing county websites by
-hand. Ships with a fully researched config for **Benton County, WA** and a
-template for adding any other county.
+hand. Ships with fully researched configs for **Benton County, WA** and
+**Franklin County, WA** (the Tri-Cities area) and a template for adding
+any other county.
 
 **This produces leads, not verified deals.** Every row still needs a manual
 title search before you spend money or make an offer -- see the caveats
@@ -47,12 +48,18 @@ This writes `out/benton_wa/`:
   to look it up, with the portal URL and exact instructions.
 - **`run_report.md`** -- summary counts plus the caveats below.
 
-As shipped, Benton County's config has **no** directly-downloadable bulk
-list for any of the five sources (see `counties/benton_wa.yaml` for why,
-source by source) -- so a run today produces 0 automated leads and 10
-manual-follow-up items. That's accurate, not a bug: re-check the portals
-listed there periodically, since counties do occasionally start publishing
-a real file, and update the config once one appears.
+As shipped, neither Benton nor Franklin County's config has a
+**confirmed, directly-downloadable** bulk list for any of the five
+sources (see `counties/benton_wa.yaml` / `counties/franklin_wa.yaml` for
+why, source by source) -- so a run today produces 0 automated leads and a
+handful of manual-follow-up items per county. That's accurate, not a bug:
+re-check the portals listed there periodically, since counties do
+occasionally start publishing a real file, and update the config once one
+appears. Franklin County in particular is worth re-checking soon -- its
+Treasurer already files an actual "Judgment Foreclosing Tax Liens and
+Order of Sale" document each year listing every parcel in foreclosure;
+this config just couldn't confirm the exact file URL/robots.txt from this
+environment (see the `tax_delinquent.reason` note in its YAML).
 
 ## High-signal flagging
 
@@ -72,9 +79,12 @@ README (VAPID keys + a `PUSH_SUBSCRIPTION` secret from subscribing on
 `https://alexmrivasjr.github.io/`) -- if you've already got that working
 for the soil-deal tracker, no new setup is needed.
 
-- `.github/workflows/scrape-leads.yml` runs weekly (Mondays) and on-demand
-  (Actions tab -> "Pull distressed-property leads" -> Run workflow, with
-  an optional `county` input, default `benton_wa`).
+- `.github/workflows/scrape-leads.yml` runs weekly (Mondays), checking
+  **every county in `counties/`** (currently `benton_wa` and
+  `franklin_wa`) one after another. On-demand (Actions tab -> "Pull
+  distressed-property leads" -> Run workflow) takes an optional `county`
+  input to run just one; leave it blank to run all of them, same as the
+  schedule.
 - Each run writes `reports/<county>.html` -- a small, phone-friendly,
   self-contained HTML page (high-signal leads first, then other leads,
   then manual follow-ups, with the same caveats as always) and commits it
@@ -156,7 +166,9 @@ python -m pytest tests/ -q
 Tests cover address/owner normalization, cross-source high-signal
 flagging, the CSV/column-remapping logic, the robots.txt fail-closed
 behavior, and the notified-state dedup logic -- all offline, no network
-calls.
+calls. `test_county_configs.py` also runs every `counties/*.yaml` file
+through the full pipeline, so a typo'd key in a new county config fails
+the test suite instead of shipping broken.
 
 ## Legal/ethical notes
 
