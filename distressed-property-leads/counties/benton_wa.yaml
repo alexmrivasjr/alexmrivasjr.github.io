@@ -1,0 +1,128 @@
+# Benton County, Washington
+#
+# Researched 2026-09; county sites change their layout/URLs over time, so
+# re-verify portal_url / list_url before relying on this for real leads.
+# Nothing here claims automatable: true unless a direct, non-search-form
+# file URL was actually found -- as of this writing, none of Benton
+# County's five source categories publish one, so this whole file is a
+# fully-documented manual-follow-up map. That's an accurate reflection of
+# reality, not a placeholder: rerun the research in README.md's "Adding a
+# new county" section periodically in case that changes.
+
+county: "Benton County"
+state: "WA"
+fips: "53005"
+
+sources:
+  # 1. Treasurer -- delinquent tax roll / tax foreclosure / tax-title list
+  tax_delinquent:
+    automatable: false
+    portal_url: "https://www.bentoncountytax.com/foreclosure-and-distraint"
+    reason: >
+      The Treasurer's Foreclosure & Distraint page describes the process and
+      lists surplus/tax-title parcels (deeded to the county after an
+      unsold foreclosure auction) but does not consistently publish a
+      current, directly-downloadable delinquent-tax-roll file at a stable
+      URL -- WA counties only foreclose after 3 full years delinquent, and
+      as of Feb 2024 the county noted it was not holding auctions. Check
+      the page each run for a current PDF/spreadsheet link; if you find
+      one, set automatable: true, list_url, and list_format below.
+    contact:
+      email: "Foreclosure@co.benton.wa.us"
+    manual_instructions: >
+      Visit bentoncountytax.com/foreclosure-and-distraint for the current
+      surplus/tax-title parcel list and foreclosure timeline. For a live
+      per-parcel delinquency balance, use the county's own property search
+      at propertysearch.co.benton.wa.us (parcel or address lookup) rather
+      than a bulk list. Email Foreclosure@co.benton.wa.us for anything not
+      published online (e.g. a full current delinquent roll).
+
+  # 2. Auditor -- recorded liens, deeds, judgments, notices of default/trustee sale
+  recorder:
+    automatable: false
+    portal_url: "https://bentonauditor.com/Recorded-Document-Search"
+    alt_portal_url: "https://erecording.co.benton.wa.us/recorder/web/"
+    reason: >
+      Recorded-document search by grantor/grantee name or parcel number,
+      filterable by document type -- an interactive session-based search
+      form (documents from 1972-present online; pre-1972 requires an
+      in-person/records request). No bulk export or public API.
+    doc_types_of_interest:
+      - "Notice of Trustee Sale"
+      - "Notice of Default"
+      - "Lis Pendens"
+      - "Mechanic's Lien"
+      - "Judgment"
+      - "Deed of Trust"
+      - "Tax Lien"
+    manual_instructions: >
+      Search bentonauditor.com's Recorded Document Search by grantor/
+      grantee name (owner) and separately by parcel number, filtering
+      Document Type to the list above. Note document type, recording
+      date/number, and stated amount for anything found. Auditor's office:
+      7122 W Okanogan Pl Suite E120, Kennewick, WA, (509) 736-2727.
+
+  # 3. Code Enforcement
+  code_enforcement:
+    automatable: false
+    portal_url: "https://www.bentoncountywa.gov/departments/community_development/planning_division/code_enforcement.php"
+    reason: >
+      No published public list of open code violations was found; the
+      county handles this complaint-driven (Request for Investigation),
+      not via a public database.
+    contact:
+      phone: "(509) 786-5612"
+      department: "Benton County Community Development, Planning Division"
+    manual_instructions: >
+      Call or file a public records request / Request for Investigation for
+      any address of interest; ask specifically whether there are open
+      violations and whether a civil penalty or lien has been recorded
+      (cross-check the recorder source above for any resulting lien).
+    also_check_cities:
+      - name: "Kennewick"
+        note: "Runs its own code enforcement for in-city addresses; contact the City of Kennewick directly."
+      - name: "Richland"
+        note: "Runs its own code enforcement for in-city addresses; contact the City of Richland directly."
+      - name: "West Richland"
+        note: "Runs its own code enforcement for in-city addresses; contact the City of West Richland directly."
+      - name: "Prosser"
+        note: "Runs its own code enforcement for in-city addresses; contact the City of Prosser directly."
+      - name: "Benton City"
+        note: "Runs its own code enforcement for in-city addresses; contact the City of Benton City directly."
+
+  # 4. Court Records -- probate, divorce, foreclosure lawsuits
+  court_records:
+    automatable: false
+    portal_url: "https://dw.courts.wa.gov/index.cfm?fa=home.casesearch"
+    reason: >
+      Washington's statewide case-search portal has limited free coverage;
+      complete/current Benton County Superior Court records require a
+      JIS-Link subscription (paid; terms restrict bulk/automated use) or a
+      records request to the County Clerk. No public bulk case-list export.
+    case_types_of_interest:
+      - "Probate"
+      - "Dissolution (Divorce)"
+      - "Judicial Foreclosure"
+      - "Unlawful Detainer"
+    manual_instructions: >
+      Quick single-name checks: dw.courts.wa.gov case search. For a
+      systematic pull by case type/date range, contact the Benton County
+      Clerk (Superior Court) or use a JIS-Link account, filter to the case
+      types above, and cross-reference party names/addresses against the
+      tax and recorder sources.
+
+  # 5. Foreclosure sales (auction stage)
+  foreclosure_sales:
+    automatable: false
+    portal_url: "https://bentonauditor.com/Recorded-Document-Search"
+    reason: >
+      Washington is a non-judicial (deed-of-trust) foreclosure state: the
+      Notice of Trustee's Sale is recorded with the County Auditor (same
+      portal as the recorder source) and separately published by the
+      trustee in a local legal newspaper. There is no single county-run
+      public list of upcoming auctions to pull in bulk.
+    manual_instructions: >
+      Use the recorder source's document-type filter for "Notice of
+      Trustee Sale" to find newly-recorded pre-auction filings; note the
+      scheduled sale date and trustee contact printed on the recorded
+      notice itself.

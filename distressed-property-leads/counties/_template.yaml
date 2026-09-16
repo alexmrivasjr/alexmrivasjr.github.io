@@ -1,0 +1,83 @@
+# Copy this file to <your_county_key>.yaml (e.g. king_wa.yaml, harris_tx.yaml)
+# and fill it in. Every "automatable: true" claim should be something you've
+# personally verified: a real, directly-downloadable file URL, and a
+# robots.txt that doesn't disallow it. When in doubt, leave automatable:
+# false -- the pipeline will just produce a manual-follow-up entry with
+# your instructions/portal_url instead of silently doing nothing.
+
+county: "Example County"
+state: "XX"
+fips: "00000"          # optional, for your own bookkeeping/scripting
+
+sources:
+  # 1. County Tax Office -- delinquent tax roll / tax-sale / tax-foreclosure list
+  tax_delinquent:
+    automatable: false
+    portal_url: "https://example-county-treasurer.gov/delinquent-taxes"
+    # Once you find a directly downloadable file (not a search form), set:
+    # automatable: true
+    # list_url: "https://example-county-treasurer.gov/files/2026-delinquent-list.pdf"
+    # list_format: pdf   # csv | xlsx | pdf
+    # column_aliases lets you override/extend how header names map to our
+    # fields, e.g. if this county's file uses "Parcel Owner" instead of "Owner".
+    # column_aliases:
+    #   owner_name: ["parcel owner"]
+    reason: "No direct downloadable list found yet -- describe what you found instead."
+    manual_instructions: >
+      Describe exactly what to click/search on the portal to find the current
+      list, or who to contact (email/phone) if it requires a records request.
+
+  # 2. County Clerk / Recorder -- liens, deeds, judgments
+  # Almost always a search form, not a bulk export. This source runs LAST in
+  # the pipeline and uses addresses already found by other sources to build
+  # per-lead "go confirm this" tasks, per the project brief.
+  recorder:
+    automatable: false
+    portal_url: "https://example-county-recorder.gov/search"
+    reason: "Interactive grantor/grantee/parcel search form; no bulk export."
+    doc_types_of_interest:
+      - "Notice of Default"
+      - "Lis Pendens"
+      - "Mechanic's Lien"
+      - "Judgment"
+      - "Notice of Trustee Sale"
+    manual_instructions: >
+      Search by grantor/grantee name and by parcel number, filtering document
+      type to the list above.
+
+  # 3. Code Enforcement
+  code_enforcement:
+    automatable: false
+    portal_url: "https://example-county.gov/code-enforcement"
+    reason: "No published public violation list found."
+    contact:
+      phone: "(000) 000-0000"
+      department: "Example County Code Enforcement"
+    manual_instructions: >
+      File a records request or Request for Investigation for addresses of
+      interest.
+    also_check_cities: []
+    # also_check_cities:
+    #   - name: "Example City"
+    #     portal_url: "https://example-city.gov/code-compliance"
+    #     note: "Runs its own code enforcement, separate from the county."
+
+  # 4. District Clerk / Court Records -- probate, divorce, foreclosure lawsuits
+  court_records:
+    automatable: false
+    portal_url: "https://example-county-courts.gov/case-search"
+    reason: "Case-search portal requires interactive search (and often a paid subscription for bulk access)."
+    case_types_of_interest: ["Probate", "Divorce", "Foreclosure"]
+    manual_instructions: >
+      Search by case type and date range; extract case number, filing date,
+      parties, and property address if listed.
+
+  # 5. Foreclosure sales (auction stage: sheriff sale / trustee sale)
+  foreclosure_sales:
+    automatable: false
+    portal_url: "https://example-county-sheriff.gov/sales"
+    reason: "Describe why this can/can't be automated for this county."
+    manual_instructions: >
+      In a judicial-foreclosure state, check the sheriff/court's own sale
+      list. In a non-judicial (deed-of-trust) state, use the recorder's
+      'Notice of Trustee Sale' document-type filter instead.
