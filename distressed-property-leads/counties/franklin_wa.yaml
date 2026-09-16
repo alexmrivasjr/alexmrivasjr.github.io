@@ -1,12 +1,7 @@
 # Franklin County, Washington (Pasco, Connell, Mesa, Kahlotus -- 99301 etc.)
 #
 # Researched 2026-09; re-verify portal_url / list_url before relying on this
-# for real leads -- county sites change layout/URLs over time. As with
-# benton_wa.yaml, nothing here claims automatable: true unless a direct,
-# non-search-form file URL was actually confirmed reachable and its
-# robots.txt checked; this environment's network access couldn't fetch the
-# Treasurer's page directly to grab that URL, so tax_delinquent is left
-# manual even though it looks more promising than Benton's (see below).
+# for real leads -- county sites change layout/URLs over time.
 
 county: "Franklin County"
 state: "WA"
@@ -15,27 +10,45 @@ fips: "53021"
 sources:
   # 1. Treasurer -- delinquent tax roll / tax foreclosure
   tax_delinquent:
-    automatable: false
+    automatable: true
     portal_url: "https://www.franklincountywa.gov/411/Tax-Foreclosure-Sales"
+    list_url: "https://www.franklincountywa.gov/DocumentCenter/View/804"
+    list_format: pdf
+    column_aliases:
+      owner_name: ["defendant", "taxpayer of record", "owner"]
+      amount: ["total amount due", "judgment amount", "amount due", "amount"]
+      parcel_number: ["parcel no", "parcel number", "parcel"]
     reason: >
-      Unlike Benton County, Franklin County's Treasurer does file an actual
-      document listing every parcel in foreclosure -- e.g. the "2025
-      Judgment Foreclosing Tax Liens and Order of Sale" (Superior Court
-      case 25-2-50612-11) -- linked from the Tax Foreclosure Sales page's
-      documents/auctions tab. That's a real candidate for automatable: true,
-      but this config couldn't confirm the direct file URL or check its
-      robots.txt from this environment. Before flipping automatable to
-      true: open the page yourself, find the current year's "Judgment
-      Foreclosing Tax Liens and Order of Sale" PDF link, confirm
-      franklincountywa.gov/robots.txt doesn't disallow it, then set
-      list_url and list_format: pdf here.
+      UNVERIFIED, NEEDS A SANITY-CHECK RUN: unlike Benton County, Franklin
+      County's Treasurer files an actual "Judgment Foreclosing Tax Liens
+      and Order of Sale" document each year listing every parcel in
+      foreclosure. list_url above (DocumentCenter/View/804) is inferred
+      from search-engine snippets that show the SAME DocumentCenter ID
+      labeled as the 2023 judgment in one crawl and the 2024 judgment in
+      another -- meaning Franklin County's CivicPlus site reuses/replaces
+      the file behind a stable ID each year rather than issuing a new one.
+      This environment's network egress proxy blocks franklincountywa.gov
+      outright (confirmed via both WebFetch and a raw curl from the shell),
+      so this URL was never actually downloaded or opened here, and its
+      robots.txt was never checked by a human -- only inferred, not
+      confirmed. The pipeline's own RobotsChecker still checks robots.txt
+      at runtime and fails closed to a manual follow-up if disallowed, and
+      the PDF table parser already degrades to a manual follow-up (with
+      the specific error) if this legal-judgment PDF's parcel schedule
+      doesn't extract as a clean table -- so a wrong guess here can't
+      produce fake data. Run this once (`python -m leadgen.cli --county
+      franklin_wa`) somewhere with normal internet access and check
+      out/franklin_wa/leads.csv and manual_followups.csv before trusting
+      it unattended; if it 404s or the case number looks stale, get the
+      current year's link from the Tax Foreclosure Sales page yourself and
+      update list_url.
     manual_instructions: >
-      Visit franklincountywa.gov/411/Tax-Foreclosure-Sales and open the
-      current year's "Judgment Foreclosing Tax Liens and Order of Sale"
-      under the documents/auctions tab -- it lists every parcel currently
-      in foreclosure (parcel, owner, amount). For a live per-parcel
-      balance, use the county's Property Tax Inquiry tool instead of a
-      bulk list.
+      If automated parsing fails: visit
+      franklincountywa.gov/411/Tax-Foreclosure-Sales and open the current
+      year's "Judgment Foreclosing Tax Liens and Order of Sale" under the
+      documents/auctions tab by hand -- it lists every parcel currently in
+      foreclosure (parcel, owner, amount). For a live per-parcel balance,
+      use the county's Property Tax Inquiry tool instead of a bulk list.
 
   # 2. Auditor -- recorded liens, deeds, judgments, notices of default/trustee sale
   recorder:

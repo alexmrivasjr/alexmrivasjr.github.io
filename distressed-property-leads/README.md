@@ -48,18 +48,26 @@ This writes `out/benton_wa/`:
   to look it up, with the portal URL and exact instructions.
 - **`run_report.md`** -- summary counts plus the caveats below.
 
-As shipped, neither Benton nor Franklin County's config has a
-**confirmed, directly-downloadable** bulk list for any of the five
-sources (see `counties/benton_wa.yaml` / `counties/franklin_wa.yaml` for
-why, source by source) -- so a run today produces 0 automated leads and a
-handful of manual-follow-up items per county. That's accurate, not a bug:
-re-check the portals listed there periodically, since counties do
-occasionally start publishing a real file, and update the config once one
-appears. Franklin County in particular is worth re-checking soon -- its
-Treasurer already files an actual "Judgment Foreclosing Tax Liens and
-Order of Sale" document each year listing every parcel in foreclosure;
-this config just couldn't confirm the exact file URL/robots.txt from this
-environment (see the `tax_delinquent.reason` note in its YAML).
+As shipped, Benton County has no confirmed, directly-downloadable bulk
+list for any of its five sources (see `counties/benton_wa.yaml` for why,
+source by source) -- so a run there produces 0 automated leads and 10
+manual-follow-up items. That's accurate, not a bug: re-check the portals
+periodically, since counties do occasionally start publishing a real
+file.
+
+Franklin County's `tax_delinquent` source is set to `automatable: true`,
+pointed at what looks like a stable URL for the Treasurer's annual
+"Judgment Foreclosing Tax Liens and Order of Sale" -- but that URL was
+inferred from search-engine snippets, not confirmed by actually opening
+the page (this dev environment's network access couldn't reach
+franklincountywa.gov at all). **Run it once somewhere with normal
+internet access and check `out/franklin_wa/leads.csv` /
+`manual_followups.csv` before trusting it unattended** -- see the long
+`reason` note in `counties/franklin_wa.yaml` for exactly what to verify.
+If the URL is wrong or the PDF doesn't parse cleanly, the pipeline
+degrades to a manual-follow-up with the specific error rather than
+failing silently or fabricating rows -- it just won't have found anything
+automatically that run.
 
 ## High-signal flagging
 
