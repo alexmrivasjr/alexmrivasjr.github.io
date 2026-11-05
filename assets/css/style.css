@@ -144,3 +144,15 @@ footer {
   font-size: 0.8rem;
   text-align: center;
 }
+
+.breadcrumb {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+}
+
+.breadcrumb a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover { color: var(--accent); }

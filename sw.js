@@ -7,7 +7,7 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("push", (event) => {
-  let data = { title: "New deal found!", body: "Check the deals page for details.", url: "/" };
+  let data = { title: "New deal found!", body: "Check the deals page for details.", url: "/deals/" };
   try {
     if (event.data) data = { ...data, ...event.data.json() };
   } catch {
@@ -19,14 +19,14 @@ self.addEventListener("push", (event) => {
       body: data.body,
       icon: "/assets/icons/icon-192.png",
       badge: "/assets/icons/icon-192.png",
-      data: { url: data.url || "/" },
+      data: { url: data.url || "/deals/" },
     })
   );
 });
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const targetUrl = event.notification.data?.url || "/";
+  const targetUrl = event.notification.data?.url || "/deals/";
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
       for (const client of clientList) {

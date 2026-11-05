@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Soil & Compost Deal Tracker</title>
+  <meta name="description" content="Alerts when specific Home Depot and Lowe's products drop below your price." />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
+  <link rel="icon" href="/assets/icons/icon-192.png" />
+  <meta name="theme-color" content="#2e7d32" />
+  <link rel="stylesheet" href="/assets/css/style.css" />
+</head>
+<body>
+  <main>
+    <header>
+      <p class="breadcrumb"><a href="/">← Alex Rivas · Portfolio</a></p>
+      <h1>🌱 Soil &amp; Compost Deal Tracker</h1>
+      <p>Watching specific Home Depot and Lowe's products, Mon/Tue/Thu/Fri, for price drops.</p>
+    </header>
+
+    <section>
+      <h2>Notifications</h2>
+      <p>Enable browser push notifications to get alerted the moment a new deal shows up, in addition to this page.</p>
+      <button id="subscribe-btn">Enable Notifications</button>
+      <p id="push-status"></p>
+      <div id="subscription-box" hidden>
+        <p>One-time setup: copy this and add it as the <code>PUSH_SUBSCRIPTION</code> secret in this repo's GitHub Actions settings.</p>
+        <textarea id="subscription-text" readonly></textarea>
+        <button id="copy-btn" type="button">Copy</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Current deals</h2>
+      <p id="last-updated"></p>
+      <ul id="deals-list">
+        <li class="empty">Loading…</li>
+      </ul>
+    </section>
+
+    <footer>
+      <p>Runs automatically Mon/Tue/Thu/Fri via GitHub Actions. Source on <a href="https://github.com/alexmrivasjr/alexmrivasjr.github.io">GitHub</a> · <a href="https://github.com/alexmrivasjr/alexmrivasjr.github.io/blob/main/docs/case-studies/deal-tracker.md">Case study</a>.</p>
+    </footer>
+  </main>
+
+  <script src="/assets/js/app.js"></script>
+</body>
+</html>

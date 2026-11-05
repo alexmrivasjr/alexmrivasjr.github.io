@@ -3,46 +3,192 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Soil & Compost Deal Tracker</title>
-  <meta name="description" content="Alerts when specific Home Depot and Lowe's products drop below your price." />
-  <link rel="manifest" href="/manifest.webmanifest" />
-  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
+  <title>Alex Rivas · Engineering Portfolio</title>
+  <meta name="description" content="Automation, data pipelines, and small production web apps by Alex Rivas, with the case studies, ADRs, and git history behind them." />
+  <meta property="og:title" content="Alex Rivas · Engineering Portfolio" />
+  <meta property="og:description" content="Automation, data pipelines, and small production web apps, documented like production systems." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://alexmrivasjr.github.io/" />
   <link rel="icon" href="/assets/icons/icon-192.png" />
-  <meta name="theme-color" content="#2e7d32" />
-  <link rel="stylesheet" href="/assets/css/style.css" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="stylesheet" href="/assets/css/portfolio.css" />
+  <script>
+    // Installed copies of the deal-tracker PWA were added to home screens
+    // when it lived at "/". Send only those to /deals/. See docs/adr/0001.
+    if (window.matchMedia("(display-mode: standalone)").matches || navigator.standalone) {
+      location.replace("/deals/");
+    }
+  </script>
 </head>
 <body>
-  <main>
-    <header>
-      <h1>🌱 Soil &amp; Compost Deal Tracker</h1>
-      <p>Watching specific Home Depot and Lowe's products, Mon/Tue/Thu/Fri, for price drops.</p>
-    </header>
+  <a class="skip" href="#work">Skip to work</a>
 
-    <section>
-      <h2>Notifications</h2>
-      <p>Enable browser push notifications to get alerted the moment a new deal shows up, in addition to this page.</p>
-      <button id="subscribe-btn">Enable Notifications</button>
-      <p id="push-status"></p>
-      <div id="subscription-box" hidden>
-        <p>One-time setup: copy this and add it as the <code>PUSH_SUBSCRIPTION</code> secret in this repo's GitHub Actions settings.</p>
-        <textarea id="subscription-text" readonly></textarea>
-        <button id="copy-btn" type="button">Copy</button>
+  <header class="hero wrap">
+    <p class="eyebrow">Alex Rivas</p>
+    <h1>I build automation, data pipelines, and small production web apps, and I document them like someone else will have to run them.</h1>
+    <p class="lede">
+      Every project below has a written case study, recorded design decisions,
+      tests where it matters, and a git history that explains <em>why</em>,
+      not just <em>what</em>.
+    </p>
+    <nav class="links" aria-label="Profiles">
+      <a class="btn primary" href="https://github.com/alexmrivasjr">GitHub</a>
+      <a class="btn" href="https://github.com/alexmrivasjr/alexmrivasjr.github.io/tree/main/docs/case-studies">Case studies</a>
+      <a class="btn" href="https://github.com/alexmrivasjr/alexmrivasjr.github.io/blob/main/docs/ENGINEERING.md">Engineering standards</a>
+      <a class="btn" href="mailto:alexmrivasjr@gmail.com">Email</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="work" class="wrap" aria-labelledby="work-h">
+      <h2 id="work-h">Selected work</h2>
+
+      <article class="project featured">
+        <div class="project-head">
+          <h3>Support Conversation Gap Diagnostic</h3>
+          <span class="status">v1 · 30 tests passing</span>
+        </div>
+        <p>
+          Turns support transcripts into a volume-weighted <strong>build roadmap</strong>
+          showing which content, data, or bot actions would resolve more tickets without a human.
+          Six checkpointed stages: ingestion, PII redaction, clustering, gap classification,
+          outcome correlation, roadmap.
+        </p>
+        <ul class="points">
+          <li>Three-layer PII redaction (regex with Luhn check → Presidio NER → LLM). Already-found PII is masked <em>before</em> any text reaches the model.</li>
+          <li>Deterministic mock LLM mode, so the whole pipeline runs in CI offline at zero cost.</li>
+          <li>Synthetic data generator with a PII answer key, so redaction recall is <em>measured</em>, not assumed.</li>
+          <li>A validation harness built around the real question: how much accuracy is lost without codebase access?</li>
+        </ul>
+        <p class="tags"><span>Python</span><span>Claude API</span><span>spaCy / Presidio</span><span>scikit-learn</span><span>pytest</span></p>
+        <p class="more"><a href="https://github.com/alexmrivasjr/alexmrivasjr.github.io/blob/main/docs/case-studies/support-gap-diagnostic.md">Read the case study →</a></p>
+      </article>
+
+      <div class="grid">
+        <article class="project">
+          <div class="project-head">
+            <h3>Soil &amp; Compost Deal Tracker</h3>
+            <span class="status live">Live</span>
+          </div>
+          <p>Watches exact retail SKUs at my local stores and pushes a phone notification when a price drops. Runs on a cron in GitHub Actions with <strong>$0 hosting</strong>.</p>
+          <ul class="points">
+            <li>SerpApi for store-local prices; JSON-LD parsing with a headless-browser fallback.</li>
+            <li>Web Push via VAPID, with no third-party service.</li>
+            <li>Evolved from a Python + email v0, with cost measured before scope grew.</li>
+          </ul>
+          <p class="tags"><span>Node</span><span>Playwright</span><span>Web Push</span><span>PWA</span><span>Actions</span></p>
+          <p class="more">
+            <a href="/deals/">Open it</a> ·
+            <a href="https://github.com/alexmrivasjr/alexmrivasjr.github.io/blob/main/docs/case-studies/deal-tracker.md">Case study →</a>
+          </p>
+        </article>
+
+        <article class="project">
+          <div class="project-head">
+            <h3>Public-Records Lead Pipeline</h3>
+            <span class="status">27 tests passing</span>
+          </div>
+          <p>Pulls county tax, lien, code-enforcement, court, and foreclosure records, normalizes addresses, and flags properties that show up across multiple sources.</p>
+          <ul class="points">
+            <li>Per-county YAML config; pluggable source adapters.</li>
+            <li>Honors robots.txt and never scrapes search forms. Sources that can't be automated become precise manual tasks instead of fake data.</li>
+          </ul>
+          <p class="tags"><span>Python</span><span>YAML config</span><span>pytest</span><span>Actions</span></p>
+          <p class="more"><a href="https://github.com/alexmrivasjr/alexmrivasjr.github.io/blob/main/docs/case-studies/public-records-leads.md">Case study →</a></p>
+        </article>
+
+        <article class="project">
+          <div class="project-head">
+            <h3>Household Meal Planner</h3>
+            <span class="status">Phases 1–3</span>
+          </div>
+          <p>One shared meal, portions solved per person across four macro targets. Built from a written PRD.</p>
+          <ul class="points">
+            <li>Portion engine: a constrained optimization with clamped multipliers plus bounded add-on rounds.</li>
+            <li>Privacy enforced in Firestore security rules, not in the UI. Sensitive metrics are visible only to the person and the admin.</li>
+          </ul>
+          <p class="tags"><span>React</span><span>TypeScript</span><span>Firebase</span><span>Vite</span></p>
+          <p class="more"><a href="https://github.com/alexmrivasjr/alexmrivasjr.github.io/blob/main/docs/case-studies/household-nutrition.md">Case study →</a></p>
+        </article>
+
+        <article class="project">
+          <div class="project-head">
+            <h3>Scratch-Ticket EV Analysis</h3>
+            <span class="status">Research</span>
+          </div>
+          <p>Scrapes published prize tables and computes expected value and the <strong>exact</strong> probability of profit for N tickets.</p>
+          <ul class="points">
+            <li>Multivariate hypergeometric model (draws without replacement) instead of the binomial shortcut.</li>
+            <li>Exact BigInt combinatorics; results cross-checked against independently published figures.</li>
+          </ul>
+          <p class="tags"><span>Node</span><span>Statistics</span><span>Playwright</span></p>
+          <p class="more"><a href="https://github.com/alexmrivasjr/alexmrivasjr.github.io/blob/main/docs/case-studies/scratch-ev-analysis.md">Case study →</a></p>
+        </article>
+
+        <article class="project">
+          <div class="project-head">
+            <h3>Athlete Recruiting Site</h3>
+            <span class="status live">In use</span>
+          </div>
+          <p>A single-file site that a non-developer edits from one data block, with a build step that generates subscribable <code>.ics</code> calendar feeds per game.</p>
+          <ul class="points">
+            <li>No tracking, no login, no forms.</li>
+            <li>Deploys through GitHub Pages Actions with SHA-pinned actions and least-privilege permissions.</li>
+          </ul>
+          <p class="tags"><span>HTML</span><span>Node build</span><span>iCalendar</span><span>Pages</span></p>
+        </article>
       </div>
     </section>
 
-    <section>
-      <h2>Current deals</h2>
-      <p id="last-updated"></p>
-      <ul id="deals-list">
-        <li class="empty">Loading…</li>
-      </ul>
+    <section class="wrap" aria-labelledby="how-h">
+      <h2 id="how-h">How I build</h2>
+      <div class="practices">
+        <div>
+          <h3>Decisions are written down</h3>
+          <p>Significant choices get an <a href="https://github.com/alexmrivasjr/alexmrivasjr.github.io/tree/main/docs/adr">Architecture Decision Record</a> listing the options, the trade-offs, and how to check it still holds. <a href="https://github.com/alexmrivasjr/alexmrivasjr.github.io/blob/main/docs/adr/0001-portfolio-at-root-tracker-at-deals.md">Example: moving this site without breaking live push subscriptions.</a></p>
+        </div>
+        <div>
+          <h3>Git history explains why</h3>
+          <p>Small, single-purpose commits in Conventional Commits format, with bodies that state the reason. Work happens on branches and lands through PRs that pass CI checks.</p>
+        </div>
+        <div>
+          <h3>Tests run offline</h3>
+          <p>External dependencies like LLMs, retailers, and county sites sit behind mocks or fixtures, so CI is deterministic, free, and needs no secrets.</p>
+        </div>
+        <div>
+          <h3>Privacy and secrets by default</h3>
+          <p>No personal data in repos; synthetic data with answer keys instead. Secrets live only in Actions secrets and get rotated. Access rules are enforced server-side.</p>
+        </div>
+        <div>
+          <h3>Measure before building</h3>
+          <p>Uncertain features get a temporary, labelled probe that measures real cost or behaviour. The probe is removed once the decision is made.</p>
+        </div>
+        <div>
+          <h3>Honest about limits</h3>
+          <p>Unverified assumptions are labelled in config and docs. Each case study ends with what I'd do next, including known gaps.</p>
+        </div>
+      </div>
+      <p class="note">
+        I build with AI coding agents (Claude Code) as a pair programmer. I own the problem framing,
+        architecture, review, and verification; the agent speeds up implementation. Commits it
+        co-authored are attributed in the git history.
+      </p>
     </section>
 
-    <footer>
-      <p>Runs automatically Mon/Tue/Thu/Fri via GitHub Actions. Source on <a href="https://github.com/alexmrivasjr/alexmrivasjr.github.io">GitHub</a>.</p>
-    </footer>
+    <section class="wrap" aria-labelledby="tools-h">
+      <h2 id="tools-h">Toolbox</h2>
+      <dl class="toolbox">
+        <div><dt>Languages</dt><dd>Python, TypeScript, JavaScript (Node), SQL, HTML/CSS</dd></div>
+        <div><dt>Data &amp; AI</dt><dd>Claude API, spaCy, Presidio, scikit-learn, embeddings + clustering</dd></div>
+        <div><dt>Web</dt><dd>React, Vite, Tailwind, PWAs, Service Workers, Web Push</dd></div>
+        <div><dt>Platform</dt><dd>GitHub Actions, GitHub Pages, Firebase (Auth, Firestore rules)</dd></div>
+        <div><dt>Automation</dt><dd>Playwright, JSON-LD/schema.org parsing, SerpApi, cron pipelines</dd></div>
+      </dl>
+    </section>
   </main>
 
-  <script src="/assets/js/app.js"></script>
+  <footer class="wrap">
+    <p>This site is plain HTML and CSS with no build step, checked by CI on every PR. <a href="https://github.com/alexmrivasjr/alexmrivasjr.github.io">View source</a>.</p>
+  </footer>
 </body>
 </html>

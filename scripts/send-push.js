@@ -34,7 +34,7 @@ async function main() {
   const payload = JSON.stringify({
     title,
     body,
-    url: newDeals[0].url || "/",
+    url: newDeals[0].url || "/deals/",
   });
 
   try {
