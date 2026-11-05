@@ -98,13 +98,37 @@ function renderDeals(payload) {
     const item = document.createElement("li");
     item.className = "deal";
     const retailer = RETAILER_NAMES[deal.retailer] || deal.retailer;
-    item.innerHTML = `
-      <span class="deal-retailer">${retailer}</span>
-      <a class="deal-title" href="${deal.url || "#"}" target="_blank" rel="noopener">${deal.title}</a>
-      <span class="deal-price">$${deal.price.toFixed(2)}</span>
-      <span class="deal-threshold">threshold: $${deal.threshold.toFixed(2)} (${deal.categoryLabel})</span>
-    `;
+
+    // Titles and URLs come from scraped third-party pages, so they are set
+    // via textContent / a validated href rather than interpolated into HTML.
+    const link = span("deal-title", deal.title, "a");
+    link.href = safeHttpUrl(deal.url);
+    link.target = "_blank";
+    link.rel = "noopener";
+
+    item.append(
+      span("deal-retailer", retailer),
+      link,
+      span("deal-price", `$${deal.price.toFixed(2)}`),
+      span("deal-threshold", `threshold: $${deal.threshold.toFixed(2)} (${deal.categoryLabel})`),
+    );
     list.appendChild(item);
+  }
+}
+
+function span(className, text, tag = "span") {
+  const el = document.createElement(tag);
+  el.className = className;
+  el.textContent = text ?? "";
+  return el;
+}
+
+function safeHttpUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:" ? url.href : "#";
+  } catch {
+    return "#";
   }
 }
 
