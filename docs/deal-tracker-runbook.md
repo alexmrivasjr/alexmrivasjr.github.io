@@ -1,4 +1,6 @@
-# alexmrivasjr.github.io — Soil & Compost Deal Tracker
+# Deal Tracker: setup & operations runbook
+
+> Design write-up: [case study](case-studies/deal-tracker.md) · Why it lives at `/deals/`: [ADR 0001](adr/0001-portfolio-at-root-tracker-at-deals.md)
 
 A small site + bot that checks specific Home Depot and Lowe's products, by
 exact SKU, for price drops:
@@ -36,7 +38,7 @@ you've enabled it) sends a browser push notification.
 - New deals (ones not already notified) trigger a **Web Push** notification
   straight to your subscribed browser/phone — no third-party service, using
   the free, standard Push API + VAPID.
-- The site (`index.html`) is a small installable PWA: a "Deals" list plus an
+- The tracker page (`deals/index.html`) is a small installable PWA: a "Deals" list plus an
   "Enable Notifications" button.
 
 Everything runs on GitHub's free tier (Pages + Actions) — no server to host or
@@ -44,10 +46,7 @@ pay for.
 
 ## One-time setup
 
-1. **Merge this branch to `main`.** GitHub Pages serves this user site
-   directly from the root of `main`.
-
-2. **Add repository secrets** (Settings → Secrets and variables → Actions):
+1. **Add repository secrets** (Settings → Secrets and variables → Actions):
    - `SERPAPI_KEY` — needed for the Home Depot checks. Get a key from
      [serpapi.com](https://serpapi.com/).
    - `VAPID_PRIVATE_KEY` — see below, was generated for you already.
@@ -55,10 +54,9 @@ pay for.
      committed in `assets/js/app.js` (the send-push script needs it as an
      env var; the copy in `app.js` is for the browser).
    - `VAPID_SUBJECT` — set to `mailto:alexmrivasjr@gmail.com`.
-   - `PUSH_SUBSCRIPTION` — added in step 4, after you subscribe.
+   - `PUSH_SUBSCRIPTION` — added in step 3, after you subscribe.
 
-   The **private** VAPID key was generated during development and shown to
-   you in chat — it is **not** committed anywhere in this repo. If you ever
+   The **private** VAPID key is **not** committed anywhere in this repo. If you ever
    need a fresh keypair (e.g. the private key leaks), run:
    ```
    npm install
@@ -67,10 +65,10 @@ pay for.
    and update both the secret and the `VAPID_PUBLIC_KEY` constant in
    `assets/js/app.js`.
 
-3. **Visit your site** once it's live (`https://alexmrivasjr.github.io/`) and
+2. **Visit the tracker** (`https://alexmrivasjr.github.io/deals/`) and
    click **Enable Notifications**. Grant the browser permission prompt.
 
-4. **Copy the subscription JSON** shown on the page and paste it as the
+3. **Copy the subscription JSON** shown on the page and paste it as the
    `PUSH_SUBSCRIPTION` secret (Settings → Secrets and variables → Actions →
    New repository secret). This is a one-time step per device you want to
    notify. If you re-subscribe on a different browser/phone later, update
@@ -81,7 +79,7 @@ pay for.
    Screen. On iPhone: open the site in Safari → Share → *Add to Home Screen*
    → open it from the home screen icon → then tap *Enable Notifications*.
 
-5. **Run the workflow once manually** (Actions tab → "Scrape soil & compost
+4. **Run the workflow once manually** (Actions tab → "Scrape soil & compost
    deals" → Run workflow) to confirm scraping and push delivery both work
    before waiting for the next scheduled run.
 
