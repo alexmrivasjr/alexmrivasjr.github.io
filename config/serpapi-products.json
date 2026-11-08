@@ -28,6 +28,18 @@
       "label": "Organic Raised Bed & Potting Mix - 2 cf",
       "productId": "205617903",
       "threshold": 2.0
+    },
+    {
+      "category": "hdx-7gal-tough-tote-yellow-lid",
+      "label": "HDX 7 Gal. Tough Storage Tote in Black with Yellow Lid",
+      "productId": "328027039",
+      "threshold": 2.0
+    },
+    {
+      "category": "hdx-7gal-tough-tote-red-lid",
+      "label": "HDX 7 Gal. Tough Storage Tote in Black with Red Lid",
+      "productId": "337213020",
+      "threshold": 2.0
     }
   ]
 }
