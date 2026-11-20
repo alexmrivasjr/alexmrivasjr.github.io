@@ -1,12 +1,7 @@
 {
-  "generatedAt": "2026-11-19T21:11:57.181Z",
+  "generatedAt": "2026-11-20T20:55:46.125Z",
   "deals": [],
   "errors": [
-    {
-      "category": "organic-garden-soil-2cf",
-      "retailer": "homedepot",
-      "error": "SerpApi lookup failed"
-    },
     {
       "category": "organic-garden-soil-1cf",
       "retailer": "homedepot",
